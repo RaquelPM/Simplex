@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <numeric>
 #include <vector>
+#include <umfpack.h>
 
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
@@ -13,14 +14,22 @@ using Eigen::VectorXd;
 
 using namespace std;
 
-class Simplex
+class GS
 {
 private:
     Eigen::SparseMatrix<double> B;
-
-    VectorXd d;
-    VectorXd y;
+    vector<pair<int, VectorXd>> Ek;
     int n;
+
+    double *null;
+    void *Symbolic, *Numeric;
 public:
-    Simplex(int n);
+    GS(Eigen::SparseMatrix<double> B, int n);
+    ~GS();
+
+    void addEk(pair<int, VectorXd> E_);
+    void refatorar();
+
+    VectorXd FTRAN(VectorXd a);
+    VectorXd BTRAN(VectorXd c);
 };
