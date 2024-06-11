@@ -1,6 +1,7 @@
 #include "GS.h"
 
-GS::GS(Eigen::SparseMatrix<double> B, int n){
+GS::GS(Eigen::SparseMatrix<double> B, int n)
+{
     this->B = B;
     this->n = n;
 
@@ -11,18 +12,20 @@ GS::GS(Eigen::SparseMatrix<double> B, int n){
     (void)umfpack_di_numeric(B.outerIndexPtr(), B.innerIndexPtr(), B.valuePtr(), Symbolic, &Numeric, null, null);
 }
 
-
-GS::~GS(){
+GS::~GS()
+{
     umfpack_di_free_symbolic(&Symbolic);
     umfpack_di_free_numeric(&Numeric);
 }
 
-void GS::addEk(pair<int, VectorXd> E_){
+void GS::addEk(pair<int, VectorXd> E_)
+{
     Ek.push_back(E_);
     // if(Ek.size() > x) refatorar();
 }
 
-void GS::refatorar(){
+void GS::refatorar()
+{
     int k = Ek.size();
     MatrixXd B_linha = B;
     for (int i = 0; i < k; i++)
@@ -36,6 +39,12 @@ void GS::refatorar(){
     B = B_linha.sparseView();
 
     Ek.clear();
+
+    umfpack_di_free_symbolic(&Symbolic);
+    umfpack_di_free_numeric(&Numeric);
+
+    (void)umfpack_di_symbolic(n, n, B.outerIndexPtr(), B.innerIndexPtr(), B.valuePtr(), &Symbolic, null, null);
+    (void)umfpack_di_numeric(B.outerIndexPtr(), B.innerIndexPtr(), B.valuePtr(), Symbolic, &Numeric, null, null);
 }
 
 VectorXd GS::FTRAN(VectorXd a)
@@ -117,6 +126,18 @@ VectorXd GS::BTRAN(VectorXd c)
     VectorXd y = VectorXd::Zero(n);
 
     (void)umfpack_di_solve(UMFPACK_At, B.outerIndexPtr(), B.innerIndexPtr(), B.valuePtr(), y.data(), v.data(), Numeric, null, null);
+
+    return y;
+}
+
+VectorXd GS::solveInit(VectorXd b)
+{
+    // solving the initial solution
+    // B*x_b = b - N*x_N
+
+    VectorXd y = VectorXd::Zero(n);
+
+    (void)umfpack_di_solve(UMFPACK_A, B.outerIndexPtr(), B.innerIndexPtr(), B.valuePtr(), y.data(), b.data(), Numeric, null, null);
 
     return y;
 }

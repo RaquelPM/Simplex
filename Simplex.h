@@ -1,26 +1,21 @@
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <numeric>
-#include <vector>
+#ifndef SIMPLEX_H
+#define SIMPLEX_H
 
-#include "Eigen/Dense"
-#include "Eigen/Sparse"
-#include "Eigen/src/Core/Matrix.h"
-
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
-
-using namespace std;
-
+#include "Data.h"
+#include "GS.h"
 class Simplex
 {
 private:
-    Eigen::SparseMatrix<double> B;
+    Data &data;
+    GS &gs;
+    MatrixXd Nb;
+    VectorXd x;
+    VectorXd c_B;
 
-    VectorXd d;
-    VectorXd y;
-    int n;
 public:
-    Simplex(int n);
+    Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
+    void findInitialSolution();
+    pair<int, int> chooseEnteringVariable();
 };
+
+#endif
