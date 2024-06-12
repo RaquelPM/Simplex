@@ -73,14 +73,14 @@ VectorXd GS::FTRAN(VectorXd a)
     {
         int eta = Ek[i].first;
         VectorXd E = Ek[i].second;
+
         double p = v(eta) / E(eta);
         v(eta) = p;
 
         for (int j = 0; j < n; j++)
         {
-            if (j == eta)
-                continue;
-            v(j) = v(j) - p * E(j);
+            if (j != eta)
+                v(j) = v(j) - p * E(j);
         }
     }
 
@@ -99,6 +99,9 @@ VectorXd GS::BTRAN(VectorXd c)
     // Solve v_2 * E_k-1 = v_1
     // ..
     // Repeat until v_k * B = v_k * LU = v_k-1
+
+    if (c.isZero())
+        return c;
 
     VectorXd v = c;
 

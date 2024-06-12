@@ -11,6 +11,7 @@ private:
     MatrixXd Nb;
     VectorXd x;
     VectorXd c_B;
+    VectorXd d;
 
 public:
     Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
@@ -18,6 +19,7 @@ public:
     pair<int, int> chooseEnteringVariable();
     pair<int, double> chooseLeavingVariable(pair<int, int> enteringVariable);
     void updateBasis(pair<int, int> enteringVariable, pair<int, double> leavingVariable);
+    double objectiveFunction();
 };
 
 #endif

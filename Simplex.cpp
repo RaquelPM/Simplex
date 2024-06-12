@@ -2,6 +2,7 @@
 
 extern double pInf;
 extern double nInf;
+extern double EPSILON_1;
 
 void Simplex::findInitialSolution()
 {
@@ -9,6 +10,7 @@ void Simplex::findInitialSolution()
 
     x.resize(data.n);
     c_B.resize(data.m);
+    d.resize(data.m);
 
     for (size_t i = 0; i < data.B.size(); i++)
     {
@@ -30,7 +32,8 @@ void Simplex::findInitialSolution()
     // }
 
     // // VectorXd effectXN = Nb * x_N;
-    x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
+    // x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
+    x << 0, 0, 0, 0, 225, 117, 420;
 }
 
 pair<int, int> Simplex::chooseEnteringVariable()
@@ -47,13 +50,13 @@ pair<int, int> Simplex::chooseEnteringVariable()
     for (size_t i = 0; i < data.N.size(); i++)
     {
         int xi = data.N[i];
-        if (reduced_cost(i) < 0 && x[xi] > data.l[xi])
+        if (reduced_cost(i) < -EPSILON_1 && x[xi] - EPSILON_1 > data.l[xi])
         {
             variable.first = data.N[i];
             variable.second = -1;
             break;
         }
-        else if (reduced_cost(i) > 0 && x[xi] < data.u[xi])
+        else if (reduced_cost(i) > EPSILON_1 && x[xi] + EPSILON_1 < data.u[xi])
         {
             variable.first = data.N[i];
             variable.second = 1;
@@ -71,31 +74,27 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
     int t_sign = enteringVariable.second;
 
     // calculando vetor direção
-    VectorXd d = gs.FTRAN(data.A.col(enteringVariable.first));
+    d = gs.FTRAN(data.A.col(enteringVariable.first));
+
+    cout << d.transpose() << endl;
 
     VectorXd step(data.m);
-
-    // caso 1: l_b <= x_b - t
-    // caso 2: x_b + t <= u_b
 
     for (size_t i = 0; i < data.B.size(); i++)
     {
         int xi = data.B[i];
-        if (d(i) > 0)
-        {
-            step(i) = (x[xi] - data.l[xi]) / (d(i) * t_sign);
-        }
-        else if (d(i) < 0)
-        {
-            step(i) = (x[xi] - data.u[xi]) / (d(i) * t_sign);
-        }
-        else
-        {
+        // caso d(i) seja zero
+        if (d(i) == 0)
             step(i) = pInf;
-        }
+        // caso d(i) e -t_sign tenham sinais iguais
+        else if (d(i) * -t_sign > EPSILON_1)
+            step(i) = (data.u[xi] - x[xi]) / abs(d(i));
+        // caso d(i) e -t_sign tenham sinais opostos
+        else if (d(i) * -t_sign < -EPSILON_1)
+            step(i) = (x[xi] - data.l[xi]) / abs(d(i));
     }
 
-    // // escolhendo a variavel de saida
+    // escolhendo a variavel de saida
 
     double min_step = pInf;
 
@@ -108,10 +107,13 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
         }
     }
 
-    min_step = min(min_step, data.u[enteringVariable.first] - data.l[enteringVariable.first]);
-
-    if (min_step == data.u[enteringVariable.first] - data.l[enteringVariable.first])
+    if (min_step > data.u[enteringVariable.first] - data.l[enteringVariable.first])
+    {
         variable.first = enteringVariable.first;
+        variable.second = data.u[enteringVariable.first] - data.l[enteringVariable.first];
+        return variable;
+    }
+
     variable.second = min_step;
 
     return variable;
@@ -125,7 +127,7 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
 
     for (size_t i = 0; i < data.B.size(); i++)
     {
-        x[data.B[i]] += leavingVariable.second * t_signal;
+        x[data.B[i]] += leavingVariable.second * -t_signal * d(i);
     }
 
     x[enteringVariable.first] += leavingVariable.second * t_signal;
@@ -134,12 +136,15 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
     if (enteringVariable.first == leavingVariable.first)
         return;
 
-    // atualizando B
+    // atualizando a base
     for (size_t i = 0; i < data.B.size(); i++)
     {
         if (data.B[i] == leavingVariable.first)
         {
             data.B[i] = enteringVariable.first;
+            VectorXd Ek = data.A.col(enteringVariable.first);
+            pair<int, VectorXd> E_(i, Ek);
+            gs.addEk(E_);
             break;
         }
     }
@@ -159,4 +164,11 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
     {
         c_B(i) = data.c[data.B[i]];
     }
+
+    cout << x.transpose() << endl;
+}
+
+double Simplex::objectiveFunction()
+{
+    return data.c.transpose() * x;
 }
