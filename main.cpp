@@ -60,5 +60,15 @@ int main(int argc, char **argv)
   cout << variable.first << endl;
   cout << variable.second << endl;
 
+  pair<int, double> leavingVariable = s.chooseLeavingVariable(variable);
+  if (leavingVariable.second == pInf)
+  {
+    cout << "Unbounded" << endl;
+    return 0;
+  }
+
+  cout << leavingVariable.first << endl;
+  cout << leavingVariable.second << endl;
+
   return 0;
 }

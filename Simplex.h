@@ -16,6 +16,8 @@ public:
     Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
     void findInitialSolution();
     pair<int, int> chooseEnteringVariable();
+    pair<int, double> chooseLeavingVariable(pair<int, int> enteringVariable);
+    void updateBasis(pair<int, int> enteringVariable, pair<int, double> leavingVariable);
 };
 
 #endif
