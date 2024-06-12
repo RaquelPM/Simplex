@@ -8,7 +8,7 @@ class Simplex
 private:
     Data &data;
     GS &gs;
-    MatrixXd Nb;
+
     VectorXd x;
     VectorXd c_B;
     VectorXd d;

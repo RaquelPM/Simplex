@@ -21,7 +21,7 @@ GS::~GS()
 void GS::addEk(pair<int, VectorXd> E_)
 {
     Ek.push_back(E_);
-    // if(Ek.size() > x) refatorar();
+    //refatorar();
 }
 
 void GS::refatorar()
@@ -122,6 +122,7 @@ VectorXd GS::BTRAN(VectorXd c)
         }
 
         v(eta) = v(eta) / E(eta);
+
     }
 
     // solving y * B = v_k
