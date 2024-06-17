@@ -27,58 +27,61 @@ int main(int argc, char **argv)
   // srand(seed);
   // int n = std::atoi(argv[1]);
 
-  // MatrixXd A(2, 4);
-  // A.row(0) << 2, 1, 1, 0;
-  // A.row(1) << 1, 3, 0, 1;
+  /*
+    MatrixXd A(2, 4);
+    A.row(0) << 2, 1, 1, 0;
+    A.row(1) << 1, 3, 0, 1;
 
-  // VectorXd b(2);
-  // b << 2, 3;
+    VectorXd b(2);
+    b << 2, 3;
 
-  // VectorXd c(4);
-  // c << 1, 1, 0, 0;
+    VectorXd c(4);
+    c << 1, 1, 0, 0;
 
-  // VectorXd u(4);
-  // u << pInf, pInf, pInf, pInf;
+    VectorXd u(4);
+    u << pInf, pInf, pInf, pInf;
 
-  // VectorXd l(4);
-  // l << 0, 0, 0, 0;
+    VectorXd l(4);
+    l << 0, 0, 0, 0;
 
-  // vector<int> B = {2, 3};
-  // vector<int> N = {0, 1};
+    vector<int> B = {2, 3};
+    vector<int> N = {0, 1};
 
-  // Data d(A, b, c, u, l, B, N, 2, 4);
+    int m = 2;
+    int n = 4;
 
-  // MatrixXd B_inicial = MatrixXd::Identity(2, 2);
-  // Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
+    MatrixXd B_inicial = MatrixXd::Identity(2, 2);
+    Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
 
-  // GS g(B_sparse, 2);
+    */
 
-  // MatrixXd A(3, 7);
-  // A.row(0) << 3, 2, 1, 2, 1, 0, 0;
-  // A.row(1) << 1, 1, 1, 1, 0, 1, 0;
-  // A.row(2) << 4, 3, 3, 4, 0, 0, 1;
+  /*
+    MatrixXd A(3, 7);
+    A.row(0) << 3, 2, 1, 2, 1, 0, 0;
+    A.row(1) << 1, 1, 1, 1, 0, 1, 0;
+    A.row(2) << 4, 3, 3, 4, 0, 0, 1;
 
-  // VectorXd b(3);
-  // b << 225, 117, 420;
+    VectorXd b(3);
+    b << 225, 117, 420;
 
-  // VectorXd c(7);
-  // c << 19, 13, 12, 17, 0, 0, 0;
+    VectorXd c(7);
+    c << 19, 13, 12, 17, 0, 0, 0;
 
-  // VectorXd u(7);
-  // u << pInf, pInf, pInf, pInf, pInf, pInf, pInf;
+    VectorXd u(7);
+    u << pInf, pInf, pInf, pInf, pInf, pInf, pInf;
 
-  // VectorXd l(7);
-  // l << 0, 0, 0, 0, 0, 0, 0;
+    VectorXd l(7);
+    l << 0, 0, 0, 0, 0, 0, 0;
 
-  // vector<int> B = {4, 5, 6};
-  // vector<int> N = {0, 1, 2, 3};
+    vector<int> B = {4, 5, 6};
+    vector<int> N = {0, 1, 2, 3};
 
-  // Data d(A, b, c, u, l, B, N, 3, 7);
+    int m = 3;
+    int n = 7;
 
-  // MatrixXd B_inicial = MatrixXd::Identity(3, 3);
-  // Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
-
-  // GS g(B_sparse, 3);
+    MatrixXd B_inicial = MatrixXd::Identity(3, 3);
+    Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
+  */
 
   MatrixXd A(2, 12);
   A.row(0) << 3, 1, 5, 6, 9, 4, 3, 4, 7, 6, 4, 5;
@@ -99,32 +102,43 @@ int main(int argc, char **argv)
   vector<int> B = {0, 1};
   vector<int> N = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-  Data d(A, b, c, u, l, B, N, 2, 12);
+  int m = 2;
+  int n = 12;
 
   MatrixXd B_inicial(2, 2);
   B_inicial.col(0) = A.col(0);
   B_inicial.col(1) = A.col(1);
   Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
 
-  GS g(B_sparse, 2);
+  // classe data armazenar as informações da instância e as matrizes B e N
+  Data d(A, b, c, u, l, B, N, m, n);
+  // classe GS para resolver sistemas lineares com a matriz básica
+  GS g(B_sparse, m);
 
+  // inicializando o simplex
   Simplex s(d, g);
   s.findInitialSolution();
 
+  // Simplex loop
   while (true)
   {
+
+    // escolhendo a variavel que vai entrar na base
     pair<int, int> variable = s.chooseEnteringVariable();
     cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
+    // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
     if (variable.first == -1)
     {
       cout << "Optimal: " << s.objectiveFunction() << endl;
       return 0;
     }
 
+    // escolhendo a variável de saída
     pair<int, double> leavingVariable = s.chooseLeavingVariable(variable);
 
-    if (leavingVariable.second <= nInf || leavingVariable.second >= pInf)
+    // caso a variável de saída não possua limitante, solução unbouded
+    if (leavingVariable.second >= pInf)
     {
       cout << "Unbounded" << endl;
       return 0;
@@ -132,8 +146,7 @@ int main(int argc, char **argv)
 
     cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
 
-    // atualizando a solução
-
+    // atualizando a base
     s.updateBasis(variable, leavingVariable);
 
     sleep(1);

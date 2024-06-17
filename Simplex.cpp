@@ -6,8 +6,11 @@ extern double EPSILON_1;
 
 void Simplex::findInitialSolution()
 {
+    // vetor solução
     x.resize(data.n);
+    // vetor custos das variáveis básicas
     c_B.resize(data.m);
+    // vetor direção
     d.resize(data.m);
 
     for (size_t i = 0; i < data.B.size(); i++)
@@ -38,20 +41,15 @@ void Simplex::findInitialSolution()
 pair<int, int> Simplex::chooseEnteringVariable()
 {
     pair<int, int> variable(-1, 0);
+    // calculando os duais
     VectorXd y = gs.BTRAN(c_B);
-
-    // calculando o custo reduzido
-
     cout << "duais: " << y.transpose() << endl;
 
+    // calculando o custo reduzido para todas as variáveis
     VectorXd reduced_cost = data.c - data.A.transpose() * y;
-
     cout << "reduced_cost: " << reduced_cost.transpose() << endl;
 
-    // escolhendo a variavel de entrada
-
-    //double testBetter = EPSILON_1;
-
+    // escolhendo a variavel de entrada (problema de maximização)
     for (size_t i = 0; i < data.N.size(); i++)
     {
         int xi = data.N[i];
@@ -65,7 +63,7 @@ pair<int, int> Simplex::chooseEnteringVariable()
         {
             variable.first = xi;
             variable.second = 1;
-            break;    
+            break;
         }
     }
 
@@ -80,11 +78,9 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
 
     // calculando vetor direção
     d = gs.FTRAN(data.A.col(enteringVariable.first));
-
     cout << "vetor d: " << d.transpose() << endl;
 
     VectorXd step(data.m);
-
     for (size_t i = 0; i < data.B.size(); i++)
     {
         int xi = data.B[i];
@@ -101,10 +97,8 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
 
     cout << "vetor t: " << step.transpose() << endl;
 
-    // escolhendo a variavel de saida
-
+    // verificando a variavel limitante
     double min_step = pInf;
-
     for (size_t i = 0; i < data.B.size(); i++)
     {
         if (step(i) < min_step)
@@ -114,6 +108,7 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
         }
     }
 
+    // caso a variável de saída seja a variável de entrada
     if (min_step > data.u[enteringVariable.first] - data.l[enteringVariable.first])
     {
         variable.first = enteringVariable.first;
@@ -129,16 +124,13 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
 void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> leavingVariable)
 {
     // atualizando x_B
-
     int t_signal = enteringVariable.second;
-
     for (size_t i = 0; i < data.B.size(); i++)
     {
         x[data.B[i]] += leavingVariable.second * -t_signal * d(i);
     }
 
     // atualizando x_j
-
     x[enteringVariable.first] += leavingVariable.second * t_signal;
 
     // caso a variavel de entrada não seja básica
@@ -172,6 +164,7 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
     {
         c_B(i) = data.c[data.B[i]];
     }
+
     cout << c_B.transpose() << endl;
     cout << x.transpose() << endl;
 }
