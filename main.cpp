@@ -14,6 +14,7 @@
 #include "Simplex.h"
 #include "GS.h"
 #include "Data.h"
+#include "mpsReader.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ double EPSILON_1 = 1e-5;
 
 int main(int argc, char **argv)
 {
+  mpsReader mps("SIMPLE.QPS");
   // int seed = std::atoi(argv[2]);
   // srand(seed);
   // int n = std::atoi(argv[1]);
@@ -83,74 +85,77 @@ int main(int argc, char **argv)
     Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
   */
 
-  MatrixXd A(2, 12);
-  A.row(0) << 3, 1, 5, 6, 9, 4, 3, 4, 7, 6, 4, 5;
-  A.row(1) << 1, 0, 9, 5, 8, 1, 2, 7, 8, 7, 9, 1;
+  /*
 
-  VectorXd b(2);
-  b << 72, 62;
+   MatrixXd A(2, 12);
+   A.row(0) << 3, 1, 5, 6, 9, 4, 3, 4, 7, 6, 4, 5;
+   A.row(1) << 1, 0, 9, 5, 8, 1, 2, 7, 8, 7, 9, 1;
 
-  VectorXd c(12);
-  c << 2, 1, -2, -2, 3, 2, 3, -4, 0, -2, -3, 3;
+   VectorXd b(2);
+   b << 72, 62;
 
-  VectorXd u(12);
-  u << pInf, 3, -2, 3, 5, 1, pInf, pInf, 0, 5, pInf, pInf;
+   VectorXd c(12);
+   c << 2, 1, -2, -2, 3, 2, 3, -4, 0, -2, -3, 3;
 
-  VectorXd l(12);
-  l << -5, nInf, -4, -2, 2, 0, 0, 3, nInf, nInf, nInf, nInf;
+   VectorXd u(12);
+   u << pInf, 3, -2, 3, 5, 1, pInf, pInf, 0, 5, pInf, pInf;
 
-  vector<int> B = {0, 1};
-  vector<int> N = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+   VectorXd l(12);
+   l << -5, nInf, -4, -2, 2, 0, 0, 3, nInf, nInf, nInf, nInf;
 
-  int m = 2;
-  int n = 12;
+   vector<int> B = {0, 1};
+   vector<int> N = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-  MatrixXd B_inicial(2, 2);
-  B_inicial.col(0) = A.col(0);
-  B_inicial.col(1) = A.col(1);
-  Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
+   int m = 2;
+   int n = 12;
 
-  // classe data armazenar as informações da instância e as matrizes B e N
-  Data d(A, b, c, u, l, B, N, m, n);
-  // classe GS para resolver sistemas lineares com a matriz básica
-  GS g(B_sparse, m);
+   MatrixXd B_inicial(2, 2);
+   B_inicial.col(0) = A.col(0);
+   B_inicial.col(1) = A.col(1);
+   Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
 
-  // inicializando o simplex
-  Simplex s(d, g);
-  s.findInitialSolution();
+   // classe data armazenar as informações da instância e as matrizes B e N
+   Data d(A, b, c, u, l, B, N, m, n);
+   // classe GS para resolver sistemas lineares com a matriz básica
+   GS g(B_sparse, m);
 
-  // Simplex loop
-  while (true)
-  {
+   // inicializando o simplex
+   Simplex s(d, g);
+   s.findInitialSolution();
 
-    // escolhendo a variavel que vai entrar na base
-    pair<int, int> variable = s.chooseEnteringVariable();
-    cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
+   // Simplex loop
+   while (true)
+   {
 
-    // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
-    if (variable.first == -1)
-    {
-      cout << "Optimal: " << s.objectiveFunction() << endl;
-      return 0;
-    }
+     // escolhendo a variavel que vai entrar na base
+     pair<int, int> variable = s.chooseEnteringVariable();
+     cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
-    // escolhendo a variável de saída
-    pair<int, double> leavingVariable = s.chooseLeavingVariable(variable);
+     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
+     if (variable.first == -1)
+     {
+       cout << "Optimal: " << s.objectiveFunction() << endl;
+       return 0;
+     }
 
-    // caso a variável de saída não possua limitante, solução unbouded
-    if (leavingVariable.second >= pInf)
-    {
-      cout << "Unbounded" << endl;
-      return 0;
-    }
+     // escolhendo a variável de saída
+     pair<int, double> leavingVariable = s.chooseLeavingVariable(variable);
 
-    cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
+     // caso a variável de saída não possua limitante, solução unbouded
+     if (leavingVariable.second >= pInf)
+     {
+       cout << "Unbounded" << endl;
+       return 0;
+     }
 
-    // atualizando a base
-    s.updateBasis(variable, leavingVariable);
+     cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
 
-    sleep(1);
-  }
+     // atualizando a base
+     s.updateBasis(variable, leavingVariable);
+
+     sleep(1);
+   }
+   */
 
   return 0;
 }

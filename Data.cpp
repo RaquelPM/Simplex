@@ -2,6 +2,20 @@
 
 #include "Data.h"
 
+Data::Data(int m, int n)
+{
+    this->m = m;
+    this->n = n;
+
+    this->A = MatrixXd::Zero(m, n);
+    this->b = VectorXd::Zero(m);
+    this->c = VectorXd::Zero(n);
+    this->u = VectorXd::Zero(n);
+    this->l = VectorXd::Zero(n);
+    this->B = std::vector<int>(m);
+    this->N = std::vector<int>(n);
+}
+
 Eigen::MatrixXd Data::gen_random_non_singular_mat(int n, int it_max)
 {
 
