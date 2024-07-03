@@ -22,9 +22,9 @@ private:
 public:
     Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
     void findInitialSolution();
-    double computeInfeasibility();
-    pair<int, int> chooseEnteringVariable();
-    pair<int, double> chooseLeavingVariable(pair<int, int> enteringVariable);
+    bool computeInfeasibility();
+    pair<int, int> chooseEnteringVariable(bool phase);
+    pair<int, double> chooseLeavingVariable(pair<int, int> enteringVariable, bool phase);
     void updateBasis(pair<int, int> enteringVariable, pair<int, double> leavingVariable);
     double objectiveFunction();
 };

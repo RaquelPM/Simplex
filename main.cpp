@@ -53,41 +53,42 @@ int main(int argc, char **argv)
   Simplex s(d, g);
   s.findInitialSolution();
   // verificando se solução inicial é infeasible
-  double infCost = s.computeInfeasibility();
-  cout << infCost << endl;
+  bool phase = s.computeInfeasibility();
 
   // Simplex loop
-  //  while (true)
-  //  {
+   while (true)
+   {
+     // escolhendo a variavel que vai entrar na base
+     pair<int, int> variable = s.chooseEnteringVariable(phase);
+     cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
-  //    // escolhendo a variavel que vai entrar na base
-  //    pair<int, int> variable = s.chooseEnteringVariable();
-  //    cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
+     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
+     if (variable.first == -1)
+     {
+       cout << "Optimal: " << s.objectiveFunction() << endl;
+       return 0;
+     }
 
-  //    // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
-  //    if (variable.first == -1)
-  //    {
-  //      cout << "Optimal: " << s.objectiveFunction() << endl;
-  //      return 0;
-  //    }
+     // escolhendo a variável de saída
+     pair<int, double> leavingVariable = s.chooseLeavingVariable(variable, phase);
 
-  //    // escolhendo a variável de saída
-  //    pair<int, double> leavingVariable = s.chooseLeavingVariable(variable);
+     // caso a variável de saída não possua limitante, solução unbouded
+     if (leavingVariable.second >= pInf)
+     {
+       cout << "Unbounded" << endl;
+       return 0;
+     }
 
-  //    // caso a variável de saída não possua limitante, solução unbouded
-  //    if (leavingVariable.second >= pInf)
-  //    {
-  //      cout << "Unbounded" << endl;
-  //      return 0;
-  //    }
+     cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
 
-  //    cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
+     // atualizando a base
+     s.updateBasis(variable, leavingVariable);
+     
+     //verificando se a solução continua inviavel
+     if(phase) phase = s.computeInfeasibility();
 
-  //    // atualizando a base
-  //    s.updateBasis(variable, leavingVariable);
-
-  //    sleep(1);
-  //  }
+     sleep(1);
+   }
 
   return 0;
 }
