@@ -1,3 +1,60 @@
+/*
+ *  mpsReader.h
+ *  cppipm
+ *
+ *  Created by Yiming Yan on 11/07/2014.
+ *  Copyright (c) 2014 Yiming Yan. All rights reserved.
+ *
+ * =================================================================
+ *
+ * Problem format
+ * min 1/2 x'Qx + c'x
+ * s.t. 
+ *      Ax = b
+ *      lb <= x <= ub
+ *
+ * Note that in order to have the above format, slack variables will 
+ * be added if needed.
+ *
+ * After call trans2standardForm() function, we get
+ * min 1/2 x'Qx + c'x
+ * s.t.
+ *      Ax = b
+ *      x >= 0
+ *
+ * =================================================================
+ * Accepted format: mps, qps, free fromatted mps, 
+ * free formatted qps
+ *  
+ *
+ * In the ROWS section, each row of the constraint matrix must have a
+ * row type and a row name specified. The code for indicating row type
+ * is as follows:
+ *
+ *      type        meaning
+ * ---------------------------
+ *      E           equality
+ *      L           less than or equal
+ *      G           greater than or equal
+ *      N           objective
+ *
+ * *** N will only be recognised as objective function.
+ * 
+ * RANGES and SOS are not accepted currently.
+ *
+ * For BOUNDS, we accept only 
+ *      type            meaning
+ *  ---------------------------------------------------
+ *      LO              lower bound        lb <= x (< +inf)
+ *      UP              upper bound        (0 <=) x <= ub
+ *
+ * *** Thus lb is always finite.
+ *
+ * For details about MPS format, see
+ *      http://lpsolve.sourceforge.net/5.5/mps-format.htm
+ *
+ */
+
 #ifndef mpsReader_h
 #define mpsReader_h
 

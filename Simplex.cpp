@@ -13,29 +13,68 @@ void Simplex::findInitialSolution()
     // vetor direção
     d.resize(data.m);
 
-    for (size_t i = 0; i < data.B.size(); i++)
+    // preenchendo c_B
+    for (int i = 0; i < data.m; i++)
     {
         c_B(i) = data.c[data.B[i]];
     }
 
-    // VectorXd x_N(data.n - data.m);
+    VectorXd x_N(data.n - data.m);
+    MatrixXd Nb = MatrixXd::Zero(data.m, data.n - data.m);
 
-    // for (size_t i = 0; i < data.N.size(); i++)
-    // {
-    //     int xi = data.N[i];
-    //     Nb.col(i) = data.A.col(xi);
-    // if (data.u[xi] == pInf && data.l[xi] == nInf)
-    //     x_N[i] = 0;
-    // else if (data.u[xi] == pInf)
-    //     x_N[i] = data.l[xi];
-    // else
-    //     x_N[i] = data.u[xi];
-    // }
+    for (size_t i = 0; i < data.N.size(); i++)
+    {
+        int xi = data.N[i];
+        Nb.col(i) = data.A.col(xi);
+        if (data.u[xi] == pInf && data.l[xi] == nInf)
+            x_N[i] = 0;
+        else if (data.u[xi] == pInf)
+            x_N[i] = data.l[xi];
+        else
+            x_N[i] = data.u[xi];
+    }
 
-    // // VectorXd effectXN = Nb * x_N;
-    x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
+    VectorXd effectXn = Nb * x_N;
+    // resolvendo sistema B*x_B = b - N*x_N
+    VectorXd x_B = gs.solveInit(data.b - effectXn);
+
+    x << x_B, x_N;
+    cout << "x_inicial: " << x.transpose() << endl;
+
+    // x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
     // x << 0, 0, 0, 0, 225, 117, 420;
     // x << 0, 0, 2, 3;
+}
+
+double Simplex::computeInfeasibility(){
+    double inf = 0;
+    P.clear();
+    Q.clear();
+
+    ub_phase = data.u;
+    lb_phase = data.l;
+    c_phase = VectorXd::Zero(data.n);
+
+    for(int i =0; i < data.m; i++){
+        int xi = data.B[i];
+        if(x[xi] < data.l[xi]){
+            inf += (data.l[xi] - x[xi]);
+            P.push_back(xi);
+            lb_phase(xi) = nInf;
+            c_phase[xi] = 1;
+        } else if(x[xi] > data.u[xi]){
+            inf += (x[xi] - data.u[xi]);
+            Q.push_back(xi);
+            ub_phase(xi) = pInf;
+            c_phase[xi] = -1;
+        }
+    }
+
+    cout << "ub: " << ub_phase.transpose() << endl;
+    cout << "lb: " << lb_phase.transpose() << endl;
+    cout << "c_phase: " << c_phase.transpose() << endl;
+
+    return inf;
 }
 
 pair<int, int> Simplex::chooseEnteringVariable()

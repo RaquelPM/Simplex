@@ -15,12 +15,6 @@ mpsReader::mpsReader(string fileName)
         // get problem dimention
         _preprocScan(readFile);
 
-        // initilize Data
-        Data data(n_rows_eq + n_rows_inq, n_cols + n_rows_inq);
-
-        cout << data.m << endl;
-        cout << data.n << endl;
-
         // extract data
         _extractData(readFile);
 
@@ -65,6 +59,8 @@ void mpsReader::_preprocScan(ifstream &readFile)
     n_rows_eq = 0;
     n_rows_inq = 0;
     n_cols = 0;
+
+    bnd_exist = false;
 
     string tmp = "_";
     string tmpItem = "";
@@ -207,12 +203,13 @@ void mpsReader::_extractData(ifstream &readFile)
     // cout << "braw: " << braw << endl;
 
     // get bounds
-    // if (bnd_exist)
+    
     lb = VectorXd::Zero(n_cols + n_rows_inq);
     ub = VectorXd::Zero(n_cols + n_rows_inq);
     ub.fill(numeric_limits<double>::infinity());
 
-    _getBnds(readFile);
+    if (bnd_exist)
+        _getBnds(readFile);
 
     // split Araw to A, Aeq, c
     // and splict braw to b and beq
@@ -220,12 +217,6 @@ void mpsReader::_extractData(ifstream &readFile)
     b = VectorXd::Zero(n_rows_inq + n_rows_eq);
     c = VectorXd::Zero(n_cols + n_rows_inq);
     _splitRaw(Araw, braw, c, A, b);
-
-    cout << lb.transpose() << endl;
-    cout << ub.transpose() << endl;
-    cout << c.transpose() << endl;
-    cout << A << endl;
-    cout << b.transpose() << endl;
 }
 
 void mpsReader::_getAraw(ifstream &readFile, MatrixXd &Araw)
@@ -350,7 +341,7 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = 1;
                 lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
                 ub(n_cols + counter_inq) = braw(i);
-                cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
+                //cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
                 counter_inq++;
             }
             else if (row_labels[i] == "G")
@@ -358,7 +349,7 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = 1;
                 ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
                 lb(n_cols + counter_inq) = braw(i);
-                cout << "braw(i): " << braw(i) << endl;
+                //cout << "braw(i): " << braw(i) << endl;
                 counter_inq++;
             }
             counter++;

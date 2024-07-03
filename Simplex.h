@@ -13,9 +13,16 @@ private:
     VectorXd c_B;
     VectorXd d;
 
+    vector<int> P;
+    vector<int> Q;
+    VectorXd c_phase;
+    VectorXd ub_phase;
+    VectorXd lb_phase;
+
 public:
     Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
     void findInitialSolution();
+    double computeInfeasibility();
     pair<int, int> chooseEnteringVariable();
     pair<int, double> chooseLeavingVariable(pair<int, int> enteringVariable);
     void updateBasis(pair<int, int> enteringVariable, pair<int, double> leavingVariable);

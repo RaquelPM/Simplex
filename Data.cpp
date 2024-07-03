@@ -14,6 +14,25 @@ Data::Data(int m, int n)
     this->l = VectorXd::Zero(n);
     this->B = std::vector<int>(m);
     this->N = std::vector<int>(n);
+
+}
+
+Data::Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, int m, int n)
+{
+    this->m = m;
+    this->n = n;
+
+    this->A = A;
+    this->b = b;
+    this->c = c;
+    this->u = u;
+    this->l = l;
+
+    // preenchendo B e N
+    for(int i =0; i < n; i++){
+        if(i <= m-1) this->B.push_back(i);
+        else this->N.push_back(i);
+    }
 }
 
 Eigen::MatrixXd Data::gen_random_non_singular_mat(int n, int it_max)
