@@ -204,8 +204,8 @@ void mpsReader::_extractData(ifstream &readFile)
 
     // get bounds
     
-    lb = VectorXd::Zero(n_cols + n_rows_inq);
-    ub = VectorXd::Zero(n_cols + n_rows_inq);
+    lb = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
+    ub = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
     ub.fill(numeric_limits<double>::infinity());
 
     if (bnd_exist)
@@ -213,9 +213,9 @@ void mpsReader::_extractData(ifstream &readFile)
 
     // split Araw to A, Aeq, c
     // and splict braw to b and beq
-    A = MatrixXd::Zero(n_rows_inq + n_rows_eq, n_cols + n_rows_inq);
+    A = MatrixXd::Zero(n_rows_inq + n_rows_eq, n_cols + n_rows_inq + n_rows_eq);
     b = VectorXd::Zero(n_rows_inq + n_rows_eq);
-    c = VectorXd::Zero(n_cols + n_rows_inq);
+    c = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
     _splitRaw(Araw, braw, c, A, b);
 }
 
@@ -341,7 +341,8 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = 1;
                 lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
                 ub(n_cols + counter_inq) = braw(i);
-                //cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
+                b(i) = 0;
+                // cout << "braw(i): " << braw(i) << " " << "b(i)" << b(i) << n_cols + counter_inq << endl;
                 counter_inq++;
             }
             else if (row_labels[i] == "G")
@@ -349,7 +350,8 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = 1;
                 ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
                 lb(n_cols + counter_inq) = braw(i);
-                //cout << "braw(i): " << braw(i) << endl;
+                b(i) = 0;
+                // cout << "braw(i): " << braw(i) << "b(i)" << b(i) << endl;
                 counter_inq++;
             }
             counter++;

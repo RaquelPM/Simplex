@@ -25,7 +25,7 @@ double EPSILON_1 = 1e-5;
 int main(int argc, char **argv)
 {
   // leitor de instâncias mps     
-  mpsReader mps("SIMPLE.QPS");
+  mpsReader mps("QFIRO.QPS");
 
    // classe data armazenar as informações da instância e as matrizes B e N
   Data d(mps.A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq);
