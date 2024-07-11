@@ -15,6 +15,9 @@ mpsReader::mpsReader(string fileName)
         // get problem dimention
         _preprocScan(readFile);
 
+        // initialize data
+        initializeData();
+
         // extract data
         _extractData(readFile);
 
@@ -30,6 +33,17 @@ mpsReader::mpsReader(string fileName)
     }
 
     readFile.close();
+}
+
+void mpsReader::initializeData()
+{
+    int qntRestrictions = n_rows_inq + n_rows_eq;
+    lb = VectorXd::Zero(n_cols + qntRestrictions);
+    ub = VectorXd::Zero(n_cols + qntRestrictions);
+    ub.fill(numeric_limits<double>::infinity());
+    A = MatrixXd::Zero(qntRestrictions, n_cols + qntRestrictions);
+    b = VectorXd::Zero(qntRestrictions);
+    c = VectorXd::Zero(n_cols + qntRestrictions);
 }
 
 void mpsReader::_findPos2Start(ifstream &readFile)
@@ -79,24 +93,24 @@ void mpsReader::_preprocScan(ifstream &readFile)
             if (_checkSectionName(firstWord) == 8)
             {
                 cout << "Error: MPSREASER - Currently cannot handle SOS" << endl;
-                break;
+                exit(1);
             }
 
             if (_checkSectionName(firstWord) == 9)
             {
                 cout << "Error: MPSREASER - Currently cannot handle RANGES" << endl;
-                break;
+                exit(1);
             }
             if (_checkSectionName(firstWord) == 7)
             {
                 cout << "Error: MPSREASER - Currently cannot handle OBJSENSE" << endl;
-                break;
+                exit(1);
             }
 
             if (_checkSectionName(firstWord) == 6)
             {
                 cout << "Error: MPSREASER - Currently cannot handle QUADOBJ" << endl;
-                break;
+                exit(1);
             }
             // ======= end check termination ======
 
@@ -203,19 +217,11 @@ void mpsReader::_extractData(ifstream &readFile)
     // cout << "braw: " << braw << endl;
 
     // get bounds
-    
-    lb = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
-    ub = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
-    ub.fill(numeric_limits<double>::infinity());
-
     if (bnd_exist)
         _getBnds(readFile);
 
     // split Araw to A, Aeq, c
     // and splict braw to b and beq
-    A = MatrixXd::Zero(n_rows_inq + n_rows_eq, n_cols + n_rows_inq + n_rows_eq);
-    b = VectorXd::Zero(n_rows_inq + n_rows_eq);
-    c = VectorXd::Zero(n_cols + n_rows_inq + n_rows_eq);
     _splitRaw(Araw, braw, c, A, b);
 }
 
@@ -310,6 +316,8 @@ void mpsReader::_getBnds(std::ifstream &readFile)
         readFile >> label >> rowName >> colName >> value;
         colIdx = _getIndex(col_list, colName);
 
+        cout << label << " " << rowName << " " << colName << " " << value << endl;
+
         if (label == "LO")
             lb(colIdx) = value;
         else if (label == "UP")
@@ -317,7 +325,10 @@ void mpsReader::_getBnds(std::ifstream &readFile)
         else
         {
             if (_checkSectionName(label) == -1)
+            {
                 std::cout << "Error: MPSREADER only accept LO and UP for Bounds" << std::endl;
+                exit(1);
+            }
             break;
         }
 
@@ -326,7 +337,7 @@ void mpsReader::_getBnds(std::ifstream &readFile)
 
 void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd &A, VectorXd &b)
 {
-    int counter = 0, counter_inq = 0;
+    int counter = 0, counter_res = 0;
 
     for (int i = 0; i < n_rows; i++)
     {
@@ -335,25 +346,26 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
         else
         {
             A.block(counter, 0, 1, n_cols) = Araw.row(i);
-            b.row(counter) = braw.row(i);
+            // b.row(counter) = braw.row(i);
             if (row_labels[i] == "L")
             {
-                A(counter, n_cols + counter_inq) = 1;
-                lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
-                ub(n_cols + counter_inq) = braw(i);
-                b(i) = 0;
-                // cout << "braw(i): " << braw(i) << " " << "b(i)" << b(i) << n_cols + counter_inq << endl;
-                counter_inq++;
+                A(counter, n_cols + counter_res) = -1;
+                lb(n_cols + counter_res) = -numeric_limits<double>::infinity();
+                ub(n_cols + counter_res) = braw(i);
             }
             else if (row_labels[i] == "G")
             {
-                A(counter, n_cols + counter_inq) = 1;
-                ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
-                lb(n_cols + counter_inq) = braw(i);
-                b(i) = 0;
-                // cout << "braw(i): " << braw(i) << "b(i)" << b(i) << endl;
-                counter_inq++;
+                A(counter, n_cols + counter_res) = -1;
+                ub(n_cols + counter_res) = numeric_limits<double>::infinity();
+                lb(n_cols + counter_res) = braw(i);
             }
+            else if (row_labels[i] == "E")
+            {
+                A(counter, n_cols + counter_res) = -1;
+                ub(n_cols + counter_res) = braw(i);
+                lb(n_cols + counter_res) = braw(i);
+            }
+            counter_res++;
             counter++;
         }
     }

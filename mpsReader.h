@@ -9,11 +9,11 @@
  *
  * Problem format
  * min 1/2 x'Qx + c'x
- * s.t. 
+ * s.t.
  *      Ax = b
  *      lb <= x <= ub
  *
- * Note that in order to have the above format, slack variables will 
+ * Note that in order to have the above format, slack variables will
  * be added if needed.
  *
  * After call trans2standardForm() function, we get
@@ -23,9 +23,9 @@
  *      x >= 0
  *
  * =================================================================
- * Accepted format: mps, qps, free fromatted mps, 
+ * Accepted format: mps, qps, free fromatted mps,
  * free formatted qps
- *  
+ *
  *
  * In the ROWS section, each row of the constraint matrix must have a
  * row type and a row name specified. The code for indicating row type
@@ -39,10 +39,10 @@
  *      N           objective
  *
  * *** N will only be recognised as objective function.
- * 
+ *
  * RANGES and SOS are not accepted currently.
  *
- * For BOUNDS, we accept only 
+ * For BOUNDS, we accept only
  *      type            meaning
  *  ---------------------------------------------------
  *      LO              lower bound        lb <= x (< +inf)
@@ -112,6 +112,7 @@ private:
     void _getbraw(std::ifstream &readFile, VectorXd &braw);
     void _splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd &A, VectorXd &b);
     void _getBnds(std::ifstream &readFile);
+    void initializeData();
 };
 
 #endif

@@ -35,6 +35,9 @@ void Simplex::findInitialSolution()
     }
 
     VectorXd effectXn = Nb * x_N;
+
+    cout << "Nb: " << Nb << endl;
+    cout << "x_N: " << x_N.transpose() << endl;
     // resolvendo sistema B*x_B = b - N*x_N
     VectorXd x_B = gs.solveInit(data.b - effectXn);
 
@@ -46,7 +49,8 @@ void Simplex::findInitialSolution()
     // x << 0, 0, 2, 3;
 }
 
-bool Simplex::computeInfeasibility(){
+bool Simplex::computeInfeasibility()
+{
     double inf = 0;
     P.clear();
     Q.clear();
@@ -55,14 +59,18 @@ bool Simplex::computeInfeasibility(){
     lb_phase = data.l;
     c_phase = VectorXd::Zero(data.n);
 
-    for(int i =0; i < data.m; i++){
+    for (int i = 0; i < data.m; i++)
+    {
         int xi = data.B[i];
-        if(x[xi] < data.l[xi]){
+        if (x[xi] < data.l[xi])
+        {
             inf += (data.l[xi] - x[xi]);
             P.push_back(xi);
             lb_phase(xi) = nInf;
             c_phase[xi] = 1;
-        } else if(x[xi] > data.u[xi]){
+        }
+        else if (x[xi] > data.u[xi])
+        {
             inf += (x[xi] - data.u[xi]);
             Q.push_back(xi);
             ub_phase(xi) = pInf;
@@ -70,8 +78,8 @@ bool Simplex::computeInfeasibility(){
         }
     }
 
-    cout << "ub: " << ub_phase.transpose() << endl;
-    cout << "lb: " << lb_phase.transpose() << endl;
+    cout << "ub_phase: " << ub_phase.transpose() << endl;
+    cout << "lb_phase: " << lb_phase.transpose() << endl;
     cout << "c_phase: " << c_phase.transpose() << endl;
 
     return inf > EPSILON_1;
@@ -85,7 +93,7 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
     for (int i = 0; i < data.m; i++)
     {
         c_B(i) = phase ? c_phase[data.B[i]] : data.c[data.B[i]];
-    }  
+    }
 
     // calculando os duais
     VectorXd y = gs.BTRAN(c_B);
@@ -94,9 +102,11 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
     // calculando o custo reduzido para todas as variáveis
     VectorXd reduced_cost;
     // caso a solução seja viavel
-    if(!phase) reduced_cost = data.c - data.A.transpose() * y;
+    if (!phase)
+        reduced_cost = data.c - data.A.transpose() * y;
     // caso a solução seja inviavel
-    else reduced_cost = c_phase - data.A.transpose() * y;
+    else
+        reduced_cost = c_phase - data.A.transpose() * y;
     cout << "reduced_cost: " << reduced_cost.transpose() << endl;
 
     // escolhendo a variavel de entrada (problema de maximização)
@@ -137,15 +147,18 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
     for (size_t i = 0; i < data.B.size(); i++)
     {
         int xi = data.B[i];
+        double absD = abs(d(i));
         // caso d(i) seja zero
-        if (d(i) == 0)
+        if (absD <= EPSILON_1)
             step(i) = pInf;
         // caso d(i) e -t_sign tenham sinais iguais
         else if (d(i) * -t_sign > EPSILON_1)
-            step(i) = (ub[xi] - x[xi]) / abs(d(i));
+            step(i) = (ub[xi] - x[xi]) / absD;
         // caso d(i) e -t_sign tenham sinais opostos
         else if (d(i) * -t_sign < -EPSILON_1)
-            step(i) = (x[xi] - lb[xi]) / abs(d(i));
+        {
+            step(i) = (x[xi] - lb[xi]) / absD;
+        }
     }
 
     cout << "vetor t: " << step.transpose() << endl;

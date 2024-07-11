@@ -1,9 +1,9 @@
 NAME          TESTPROB
 ROWS
  N  COST
- E  LIM1
- E  LIM2
- E  LIM3
+ L  LIM1
+ L  LIM2
+ L  LIM3
 COLUMNS
     XONE      COST                 19   LIM1                 3
     XONE      LIM2                 1    LIM3                 4
@@ -13,12 +13,6 @@ COLUMNS
     XTRH      LIM2                 1    LIM3                 3
     XFOU      COST                 17   LIM1                 2
     XFOU      LIM2                 1    LIM3                 4
-    XFIV      COST                 0   LIM1                 1
-    XFIV      LIM2                 0    LIM3                 0
-    XSIX      COST                 0   LIM1                 0
-    XSIX      LIM2                 1    LIM3                0
-    XSEV      COST                 0   LIM1                 0
-    XSEV      LIM2                 0    LIM3                 1
 RHS
     RHS1      LIM1                 225   LIM2                117
     RHS1      LIM3                420

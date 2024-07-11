@@ -14,7 +14,6 @@ Data::Data(int m, int n)
     this->l = VectorXd::Zero(n);
     this->B = std::vector<int>(m);
     this->N = std::vector<int>(n);
-
 }
 
 Data::Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, int m, int n)
@@ -29,9 +28,12 @@ Data::Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, int m, in
     this->l = l;
 
     // preenchendo B e N
-    for(int i =0; i < n; i++){
-        if(i <= m-1) this->B.push_back(i);
-        else this->N.push_back(i);
+    for (int i = 0; i < n; i++)
+    {
+        if (i < n - m)
+            this->N.push_back(i);
+        else
+            this->B.push_back(i);
     }
 }
 
