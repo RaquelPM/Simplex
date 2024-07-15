@@ -7,7 +7,7 @@ Data::Data(int m, int n)
     this->m = m;
     this->n = n;
 
-    this->A = MatrixXd::Zero(m, n);
+    this->A = Eigen::SparseMatrix<double>(m, n);
     this->b = VectorXd::Zero(m);
     this->c = VectorXd::Zero(n);
     this->u = VectorXd::Zero(n);
@@ -16,7 +16,7 @@ Data::Data(int m, int n)
     this->N = std::vector<int>(n);
 }
 
-Data::Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, int m, int n)
+Data::Data(Eigen::SparseMatrix<double> &A, VectorXd &b, VectorXd &c, VectorXd &u, VectorXd &l, int m, int n)
 {
     this->m = m;
     this->n = n;

@@ -29,8 +29,13 @@ int main(int argc, char **argv)
   // leitor de instâncias mps
   mpsReader mps(filename);
 
+  cout << "leitor" << endl;
+
+  // Matriz A esparsa
+  Eigen::SparseMatrix<double> A = mps.A.sparseView();
+
   // classe data armazenar as informações da instância e as matrizes B e N
-  Data d(mps.A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
+  Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
 
   cout << "lb: " << d.l.transpose() << endl;
   cout << "ub: " << d.u.transpose() << endl;
@@ -43,20 +48,15 @@ int main(int argc, char **argv)
     d.c = -d.c;
 
   // Inicializando B
-
-  MatrixXd B_inicial(d.m, d.m);
+  Eigen::SparseMatrix<double> B_sparse(d.m, d.m);
   for (size_t i = 0; i < d.B.size(); i++)
   {
     int xi = d.B[i];
-    B_inicial.col(i) = d.A.col(xi);
+    B_sparse.col(i) = d.A.col(xi);
   }
 
-  cout << B_inicial << endl;
-
-  Eigen::SparseMatrix<double> B_sparse = B_inicial.sparseView();
-
   // classe GS para resolver sistemas lineares com a matriz básica
-  GS g(B_sparse, d.m);
+  GS g(B_sparse, A, d.m);
 
   // inicializando o simplex
   Simplex s(d, g);
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     if (phase)
       phase = s.computeInfeasibility();
 
-    sleep(1);
+    //sleep(1);
   }
 
   return 0;

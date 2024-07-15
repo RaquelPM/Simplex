@@ -16,7 +16,7 @@ using Eigen::VectorXd;
 class Data
 {
 public:
-    MatrixXd A;
+    Eigen::SparseMatrix<double> A;
     VectorXd b;
     VectorXd c;
     VectorXd u;
@@ -26,8 +26,8 @@ public:
     int m;
     int n;
 
-    Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, vector<int> B, vector<int> N, int m, int n) : A(A), b(b), c(c), u(u), l(l), B(B), N(N), m(m), n(n){};
-    Data(MatrixXd A, VectorXd b, VectorXd c, VectorXd u, VectorXd l, int m, int n);
+    Data(Eigen::SparseMatrix<double> &A, VectorXd &b, VectorXd &c, VectorXd &u, VectorXd &l, vector<int> B, vector<int> N, int m, int n) : A(A), b(b), c(c), u(u), l(l), B(B), N(N), m(m), n(n){};
+    Data(Eigen::SparseMatrix<double> &A, VectorXd &b, VectorXd &c, VectorXd &u, VectorXd &l, int m, int n);
     Data(int m, int n);
     // gerador de matrizes inversiveis B aleatorias (it_max e o grau de aleatoriedade)
     MatrixXd gen_random_non_singular_mat(int n, int it_max);

@@ -20,6 +20,7 @@ using namespace std;
 class GS
 {
 private:
+    Eigen::SparseMatrix<double> A;
     Eigen::SparseMatrix<double> B;
     vector<pair<int, VectorXd>> Ek;
     int n;
@@ -28,11 +29,12 @@ private:
     void *Symbolic, *Numeric;
 
 public:
-    GS(Eigen::SparseMatrix<double> B, int n);
+    GS(Eigen::SparseMatrix<double> B, Eigen::SparseMatrix<double> A, int n);
     ~GS();
 
     void addEk(pair<int, VectorXd> E_);
-    void refatorar();
+    void refatorar(vector<int> &B);
+    int getEkSize();
 
     VectorXd FTRAN(VectorXd a);
     VectorXd BTRAN(VectorXd c);

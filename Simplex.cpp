@@ -36,8 +36,6 @@ void Simplex::findInitialSolution()
 
     VectorXd effectXn = Nb * x_N;
 
-    cout << "Nb: " << Nb << endl;
-    cout << "x_N: " << x_N.transpose() << endl;
     // resolvendo sistema B*x_B = b - N*x_N
     VectorXd x_B = gs.solveInit(data.b - effectXn);
 
@@ -90,9 +88,16 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
     pair<int, int> variable(-1, 0);
 
     // altualizando c_B
-    for (int i = 0; i < data.m; i++)
-    {
-        c_B(i) = phase ? c_phase[data.B[i]] : data.c[data.B[i]];
+    if(phase){
+        for (int i = 0; i < data.m; i++)
+        {
+            c_B(i) = c_phase[data.B[i]];
+        }
+    } else {
+        for (int i = 0; i < data.m; i++)
+        {
+            c_B(i) = data.c[data.B[i]];
+        }
     }
 
     // calculando os duais
@@ -101,12 +106,14 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
 
     // calculando o custo reduzido para todas as variáveis
     VectorXd reduced_cost;
+
     // caso a solução seja viavel
     if (!phase)
         reduced_cost = data.c - data.A.transpose() * y;
     // caso a solução seja inviavel
     else
         reduced_cost = c_phase - data.A.transpose() * y;
+
     cout << "reduced_cost: " << reduced_cost.transpose() << endl;
 
     // escolhendo a variavel de entrada (problema de maximização)
@@ -214,6 +221,8 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
             break;
         }
     }
+
+    if(gs.getEkSize() >= 20) gs.refatorar(data.B);
 
     // atualizando N
     for (size_t i = 0; i < data.N.size(); i++)

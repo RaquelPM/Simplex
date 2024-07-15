@@ -1,7 +1,8 @@
 #include "GS.h"
 
-GS::GS(Eigen::SparseMatrix<double> B, int n)
+GS::GS(Eigen::SparseMatrix<double> B, Eigen::SparseMatrix<double> A,int n)
 {
+    this->A = A;
     this->B = B;
     this->n = n;
 
@@ -21,23 +22,19 @@ GS::~GS()
 void GS::addEk(pair<int, VectorXd> E_)
 {
     Ek.push_back(E_);
-    //refatorar();
 }
 
-void GS::refatorar()
+int GS::getEkSize(){
+    return Ek.size();
+}
+
+void GS::refatorar(vector<int> &B_b)
 {
-    int k = Ek.size();
-    MatrixXd B_linha = B;
-    for (int i = 0; i < k; i++)
+    for (size_t i = 0; i < B_b.size(); i++)
     {
-        Eigen::MatrixXd E = Eigen::MatrixXd::Identity(n, n);
-        E.col(Ek[i].first) = Ek[i].second;
-
-        B_linha = B_linha * E;
+        int xi = B_b[i];
+        B.col(i) = A.col(xi);
     }
-
-    B = B_linha.sparseView();
-
     Ek.clear();
 
     umfpack_di_free_symbolic(&Symbolic);
