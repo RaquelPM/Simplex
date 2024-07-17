@@ -39,8 +39,10 @@ void Simplex::findInitialSolution()
     // resolvendo sistema B*x_B = b - N*x_N
     VectorXd x_B = gs.solveInit(data.b - effectXn);
 
-    x << x_B, x_N;
+    x << x_N, x_B;
     cout << "x_inicial: " << x.transpose() << endl;
+
+    //exit(0);
 
     // x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
     // x << 0, 0, 0, 0, 225, 117, 420;
@@ -65,6 +67,7 @@ bool Simplex::computeInfeasibility()
             inf += (data.l[xi] - x[xi]);
             P.push_back(xi);
             lb_phase(xi) = nInf;
+            ub_phase(xi) = data.l[xi];
             c_phase[xi] = 1;
         }
         else if (x[xi] > data.u[xi])
@@ -72,6 +75,7 @@ bool Simplex::computeInfeasibility()
             inf += (x[xi] - data.u[xi]);
             Q.push_back(xi);
             ub_phase(xi) = pInf;
+            lb_phase(xi) = data.u[xi];
             c_phase[xi] = -1;
         }
     }
@@ -85,7 +89,7 @@ bool Simplex::computeInfeasibility()
 
 pair<int, int> Simplex::chooseEnteringVariable(bool phase)
 {
-    pair<int, int> variable(-1, 0);
+    pair<int, int> variable(INT_MAX, 0);
 
     // altualizando c_B
     if(phase){
@@ -122,15 +126,17 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
         int xi = data.N[i];
         if (reduced_cost(xi) < -EPSILON_1 && x[xi] - EPSILON_1 > data.l[xi])
         {
-            variable.first = xi;
-            variable.second = -1;
-            break;
+            if(xi < variable.first){
+                variable.first = xi;
+                variable.second = -1;
+            }
         }
         else if (reduced_cost(xi) > EPSILON_1 && x[xi] + EPSILON_1 < data.u[xi])
         {
-            variable.first = xi;
-            variable.second = 1;
-            break;
+            if(xi < variable.first){
+                variable.first = xi;
+                variable.second = 1;
+            }
         }
     }
 
@@ -222,8 +228,6 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
         }
     }
 
-    if(gs.getEkSize() >= 20) gs.refatorar(data.B);
-
     // atualizando N
     for (size_t i = 0; i < data.N.size(); i++)
     {
@@ -233,6 +237,9 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
             break;
         }
     }
+
+    // refatorando
+    if(gs.getEkSize() >= 20) gs.refatorar(data.B);
 
     cout << "soluçao: " << x.transpose() << endl;
 }

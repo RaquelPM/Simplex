@@ -555,23 +555,23 @@ COLUMNS
     COL00202  ROW00205           -1.
     COL00203  ROW00202           -1.   ROW00205            1.
 RHS
-    RHS       ROW00001          200.   ROW00002          100.
-    RHS       ROW00011          200.   ROW00012          100.
-    RHS       ROW00022          200.   ROW00023          100.
-    RHS       ROW00033          200.   ROW00034          100.
-    RHS       ROW00044          200.   ROW00045          100.
-    RHS       ROW00055          200.   ROW00056          100.
-    RHS       ROW00066          200.   ROW00067          100.
-    RHS       ROW00077          200.   ROW00078          100.
-    RHS       ROW00088          200.   ROW00089          100.
-    RHS       ROW00099          200.   ROW00100          100.
-    RHS       ROW00111          200.   ROW00112          100.
-    RHS       ROW00122          200.   ROW00123          100.
-    RHS       ROW00133          200.   ROW00134          100.
-    RHS       ROW00144          200.   ROW00145          100.
-    RHS       ROW00155          200.   ROW00156          100.
-    RHS       ROW00166          200.   ROW00167          100.
-    RHS       ROW00177          200.   ROW00178          100.
-    RHS       ROW00188          200.   ROW00189          100.
-    RHS       ROW00199          200.   ROW00200          100.
+    RHS1       ROW00001          200.   ROW00002          100.
+    RHS1       ROW00011          200.   ROW00012          100.
+    RHS1       ROW00022          200.   ROW00023          100.
+    RHS1       ROW00033          200.   ROW00034          100.
+    RHS1       ROW00044          200.   ROW00045          100.
+    RHS1       ROW00055          200.   ROW00056          100.
+    RHS1       ROW00066          200.   ROW00067          100.
+    RHS1       ROW00077          200.   ROW00078          100.
+    RHS1       ROW00088          200.   ROW00089          100.
+    RHS1       ROW00099          200.   ROW00100          100.
+    RHS1       ROW00111          200.   ROW00112          100.
+    RHS1       ROW00122          200.   ROW00123          100.
+    RHS1       ROW00133          200.   ROW00134          100.
+    RHS1       ROW00144          200.   ROW00145          100.
+    RHS1       ROW00155          200.   ROW00156          100.
+    RHS1       ROW00166          200.   ROW00167          100.
+    RHS1       ROW00177          200.   ROW00178          100.
+    RHS1       ROW00188          200.   ROW00189          100.
+    RHS1       ROW00199          200.   ROW00200          100.
 ENDATA

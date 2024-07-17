@@ -44,6 +44,51 @@ int main(int argc, char **argv)
   cout << d.A << endl;
   cout << "b: " << d.b.transpose() << endl;
 
+  // cout << d.m << " " << d.n << endl;
+
+  // cout << d.u.size() << endl;
+  // cout << d.l.size() << endl;
+
+  // cout << "A: " << endl;
+  // cout << A.col(1) << endl;
+
+  // for(int i = 0; i < d.m; i++){
+  //   for(int j =0; j < d.n; j++){
+  //     cout << A.coeff(i, j) << " ";
+  //   } cout << endl;
+  // }
+
+  // for(int i = 0; i < d.m; i++){
+  //   cout << d.b(i) << " ";
+  // }
+
+  // cout << endl;
+
+  // for(int i = 0; i < d.n; i++){
+  //   cout << d.c(i) << " ";
+  // }
+  // cout << endl;
+
+  // for(int i = 0; i < d.n; i++){
+  //   cout << d.l(i) << " ";
+  // }
+  // cout << endl;
+
+  // for(int i = 0; i < d.n; i++){
+  //   cout << d.u(i) << " ";
+  // }
+  // cout << endl;
+
+  // for(size_t i = 0; i < d.B.size(); i++){
+  //   cout << d.B[i] << " ";
+  // }
+  // cout << endl;
+
+  // for(size_t i = 0; i < d.N.size(); i++){
+  //   cout << d.N[i] << " ";
+  // }
+  // cout << endl;
+
   if (fo == "min")
     d.c = -d.c;
 
@@ -74,7 +119,7 @@ int main(int argc, char **argv)
     cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
-    if (variable.first == -1)
+    if (variable.first == INT_MAX)
     {
       cout << "Optimal: " << s.objectiveFunction() << endl;
       return 0;
