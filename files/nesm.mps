@@ -5,7 +5,7 @@
 * Non-zeros:  13376
 * Format:     Free MPS
 *
-NAME
+NAME NESM
 ROWS
  N R0000000
  E RCAPP11

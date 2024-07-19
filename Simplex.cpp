@@ -4,6 +4,8 @@ extern double pInf;
 extern double nInf;
 extern double EPSILON_1;
 
+#include <unistd.h>
+
 void Simplex::findInitialSolution()
 {
     // vetor solução
@@ -28,10 +30,10 @@ void Simplex::findInitialSolution()
         Nb.col(i) = data.A.col(xi);
         if (data.u[xi] == pInf && data.l[xi] == nInf)
             x_N[i] = 0;
-        else if (data.u[xi] == pInf)
-            x_N[i] = data.l[xi];
-        else
+        else if (data.l[xi] == -pInf)
             x_N[i] = data.u[xi];
+        else
+            x_N[i] = data.l[xi];
     }
 
     VectorXd effectXn = Nb * x_N;
@@ -80,9 +82,9 @@ bool Simplex::computeInfeasibility()
         }
     }
 
-    cout << "ub_phase: " << ub_phase.transpose() << endl;
-    cout << "lb_phase: " << lb_phase.transpose() << endl;
-    cout << "c_phase: " << c_phase.transpose() << endl;
+    // cout << "ub_phase: " << ub_phase.transpose() << endl;
+    // cout << "lb_phase: " << lb_phase.transpose() << endl;
+    // cout << "c_phase: " << c_phase.transpose() << endl;
 
     return inf > EPSILON_1;
 }
@@ -106,7 +108,7 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
 
     // calculando os duais
     VectorXd y = gs.BTRAN(c_B);
-    cout << "duais: " << y.transpose() << endl;
+    //cout << "duais: " << y.transpose() << endl;
 
     // calculando o custo reduzido para todas as variáveis
     VectorXd reduced_cost;
@@ -118,7 +120,7 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
     else
         reduced_cost = c_phase - data.A.transpose() * y;
 
-    cout << "reduced_cost: " << reduced_cost.transpose() << endl;
+    //cout << "reduced_cost: " << reduced_cost.transpose() << endl;
 
     // escolhendo a variavel de entrada (problema de maximização)
     for (size_t i = 0; i < data.N.size(); i++)
@@ -145,13 +147,13 @@ pair<int, int> Simplex::chooseEnteringVariable(bool phase)
 
 pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable, bool phase)
 {
-    pair<int, double> variable(-1, 0);
+    pair<int, double> variable(INT_MAX, 0);
 
     int t_sign = enteringVariable.second;
 
     // calculando vetor direção
     d = gs.FTRAN(data.A.col(enteringVariable.first));
-    cout << "vetor d: " << d.transpose() << endl;
+    //cout << "vetor d: " << d.transpose() << endl;
 
     VectorXd ub = phase ? ub_phase : data.u;
     VectorXd lb = phase ? lb_phase : data.l;
@@ -162,7 +164,7 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
         int xi = data.B[i];
         double absD = abs(d(i));
         // caso d(i) seja zero
-        if (absD <= EPSILON_1)
+        if (absD < EPSILON_1)
             step(i) = pInf;
         // caso d(i) e -t_sign tenham sinais iguais
         else if (d(i) * -t_sign > EPSILON_1)
@@ -174,16 +176,41 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
         }
     }
 
-    cout << "vetor t: " << step.transpose() << endl;
+    //cout << "vetor t: " << step.transpose() << endl;
 
-    // verificando a variavel limitante
+    // cout << endl;
+
+    // // verificando a variavel limitante
+
+    // for(size_t i =0; i < data.B.size(); i++){
+    //     cout << data.B[i] << " ";
+    // } cout << endl;
+
+    // for(size_t i =0; i < data.m; i++){
+    //     cout << step(i) << " ";
+    // } cout << endl;
+
+    // cout << endl;
+
     double min_step = pInf;
     for (size_t i = 0; i < data.B.size(); i++)
     {
-        if (step(i) < min_step)
-        {
+        if (step(i) <= min_step)
+        {           
+            if(step(i) == min_step){
+                // cout << "IGUAL!" << endl;
+                // cout << step(i) << " " << min_step << endl;
+                // cout << data.B[i] << " " << variable.first << endl;
+                if(data.B[i] < variable.first){
+                    variable.first = data.B[i];
+                }
+                //sleep(1);
+            } else {
+                // cout << "DI" << endl;
+                variable.first = data.B[i]; 
+                //sleep(1);
+            }
             min_step = step(i);
-            variable.first = data.B[i];
         }
     }
 
@@ -240,8 +267,9 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
 
     // refatorando
     if(gs.getEkSize() >= 20) gs.refatorar(data.B);
+    //gs.refatorar(data.B);
 
-    cout << "soluçao: " << x.transpose() << endl;
+    //cout << "soluçao: " << x.transpose() << endl;
 }
 
 double Simplex::objectiveFunction()

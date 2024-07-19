@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   cout << "ub: " << d.u.transpose() << endl;
   cout << "c: " << d.c.transpose() << endl;
   cout << "A: " << endl;
-  cout << d.A << endl;
+  //cout << d.A << endl;
   cout << "b: " << d.b.transpose() << endl;
 
   // cout << d.m << " " << d.n << endl;
@@ -111,12 +111,16 @@ int main(int argc, char **argv)
 
   cout << "fase: " << phase << endl;
 
+  int i =0;
+
   // Simplex loop
   while (true)
   {
+    i++;
+    cout << "interação: " << i << endl;
     // escolhendo a variavel que vai entrar na base
     pair<int, int> variable = s.chooseEnteringVariable(phase);
-    cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
+    //cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
     if (variable.first == INT_MAX)
@@ -135,7 +139,7 @@ int main(int argc, char **argv)
       return 0;
     }
 
-    cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
+    //cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
 
     // atualizando a base
     s.updateBasis(variable, leavingVariable);
@@ -143,6 +147,8 @@ int main(int argc, char **argv)
     // verificando se a solução continua inviavel
     if (phase)
       phase = s.computeInfeasibility();
+
+    cout << "cost: " << s.objectiveFunction() << " fase: " << phase << endl; 
 
     //sleep(1);
   }
