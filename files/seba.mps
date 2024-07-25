@@ -5,7 +5,7 @@
 * Non-zeros:  4359
 * Format:     Free MPS
 *
-NAME
+NAME SEBA
 ROWS
  N R0000000
  E r_1

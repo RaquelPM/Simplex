@@ -6,6 +6,8 @@
 #include <map>
 #include <limits>
 #include <unistd.h>
+#include <fstream>
+#include <string>
 
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
@@ -27,30 +29,100 @@ int main(int argc, char **argv)
   string filename = argv[1];
   string fo = argv[2];
   // leitor de instâncias mps
-  mpsReader mps(filename);
 
-  cout << "leitor" << endl;
+  MatrixXd A_dense;
+  VectorXd b;
+  VectorXd l;
+  VectorXd u;
+  VectorXd c;
+
+  int m, n;
+
+  mpsReader mps;
+
+  if(fo != "mps"){
+    ifstream readFile(filename);
+    readFile >> m >> n;
+
+    l = VectorXd::Zero(n);
+    u = VectorXd::Zero(n);
+    A_dense = MatrixXd::Zero(m, n);
+    b = VectorXd::Zero(m);
+    c = VectorXd::Zero(n);
+
+    readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    for(int i = 0; i < m; i++){
+      for(int j = 0; j < n; j++){
+        readFile >> A_dense(i, j);
+      }
+      readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    for(int i =0; i < n; i++){
+      readFile >> c(i);
+    }
+    readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    string str;
+
+    for(int i =0;i < n; i++){
+      readFile >> str;
+      if(!str.compare("inf")) l(i) = pInf;
+      else if(!str.compare("-inf")) l(i) = nInf;
+      else l(i) = stof(str);
+    }
+
+    readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    for(int i =0;i < n; i++){
+      readFile >> str;
+      if(!str.compare("inf")) u(i) = pInf;
+      else if(!str.compare("-inf")) u(i) = nInf;
+      else u(i) = stof(str);
+    }
+
+    readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    for(int i =0;i < m; i++){
+      readFile >> b(i);
+    }
+  }
+  else {
+    mps.read(filename);
+
+    l = mps.lb;
+    u = mps.ub;
+    A_dense = mps.A;
+    b = mps.b;
+    c = mps.c;
+    m = mps.n_rows_eq + mps.n_rows_inq;
+    n = mps.n_cols + mps.n_rows_inq + mps.n_rows_eq;
+  }
+  //cout << "leitor" << endl;
 
   // Matriz A esparsa
-  Eigen::SparseMatrix<double> A = mps.A.sparseView();
+  Eigen::SparseMatrix<double> A = A_dense.sparseView();
 
   // classe data armazenar as informações da instância e as matrizes B e N
-  Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
+  //Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
 
-  cout << "lb: " << d.l.transpose() << endl;
-  cout << "ub: " << d.u.transpose() << endl;
-  cout << "c: " << d.c.transpose() << endl;
-  cout << "A: " << endl;
-  //cout << d.A << endl;
-  cout << "b: " << d.b.transpose() << endl;
+  // cout << "lb: " << d.l.transpose() << endl;
+  // cout << "ub: " << d.u.transpose() << endl;
+  // cout << "c: " << d.c.transpose() << endl;
+  // cout << "A: " << endl;
+  // cout << d.A << endl;
+  // cout << "b: " << d.b.transpose() << endl;
 
-  // cout << d.m << " " << d.n << endl;
+  Data d(A, b, c, u, l, m, n);
+
+  cout << d.m << " " << d.n << endl;
 
   // cout << d.u.size() << endl;
   // cout << d.l.size() << endl;
 
-  // cout << "A: " << endl;
-  // cout << A.col(1) << endl;
+  // // cout << "A: " << endl;
+  // // cout << A.col(1) << endl;
 
   // for(int i = 0; i < d.m; i++){
   //   for(int j =0; j < d.n; j++){
@@ -65,7 +137,7 @@ int main(int argc, char **argv)
   // cout << endl;
 
   // for(int i = 0; i < d.n; i++){
-  //   cout << d.c(i) << " ";
+  //   cout << -d.c(i) << " ";
   // }
   // cout << endl;
 
@@ -89,7 +161,7 @@ int main(int argc, char **argv)
   // }
   // cout << endl;
 
-  if (fo == "min")
+  if (fo == "mps")
     d.c = -d.c;
 
   // Inicializando B
@@ -111,17 +183,14 @@ int main(int argc, char **argv)
 
   cout << "fase: " << phase << endl;
 
-  int i =0;
 
   // Simplex loop
   while (true)
   {
-    i++;
-    cout << "interação: " << i << endl;
     // escolhendo a variavel que vai entrar na base
     pair<int, int> variable = s.chooseEnteringVariable(phase);
     //cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
-
+    
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
     if (variable.first == INT_MAX)
     {
@@ -140,7 +209,7 @@ int main(int argc, char **argv)
     }
 
     //cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
-
+    
     // atualizando a base
     s.updateBasis(variable, leavingVariable);
 

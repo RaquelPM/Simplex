@@ -43,12 +43,6 @@ void Simplex::findInitialSolution()
 
     x << x_N, x_B;
     cout << "x_inicial: " << x.transpose() << endl;
-
-    //exit(0);
-
-    // x << 1, 0, -2, 3, 2, 0, 0, 3, 0, 5, -1, 1;
-    // x << 0, 0, 0, 0, 225, 117, 420;
-    // x << 0, 0, 2, 3;
 }
 
 bool Simplex::computeInfeasibility()
@@ -215,7 +209,7 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
     }
 
     // caso a variável de saída seja a variável de entrada
-    if (min_step > ub[enteringVariable.first] - lb[enteringVariable.first])
+    if (min_step > ub[enteringVariable.first] - lb[enteringVariable.first] + EPSILON_1)
     {
         variable.first = enteringVariable.first;
         variable.second = ub[enteringVariable.first] - lb[enteringVariable.first];

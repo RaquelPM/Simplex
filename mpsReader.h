@@ -77,6 +77,8 @@ class mpsReader
 {
 public:
     mpsReader(string fileName);
+    mpsReader();
+    void read(string fileName);
 
     string Name;
     int n_rows;

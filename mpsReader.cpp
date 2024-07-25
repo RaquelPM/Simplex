@@ -35,6 +35,44 @@ mpsReader::mpsReader(string fileName)
     readFile.close();
 }
 
+mpsReader::mpsReader()
+{
+}
+
+void mpsReader::read(string fileName){
+    ifstream readFile(fileName);
+
+    if (readFile.is_open())
+    {
+        // wall_clock timer;
+        // timer.tic();
+
+        // get rid of comments or blank line
+        _findPos2Start(readFile);
+
+        // get problem dimention
+        _preprocScan(readFile);
+
+        // initialize data
+        initializeData();
+
+        // extract data
+        _extractData(readFile);
+
+        // readFile.close();
+        // time = timer.toc();
+
+        // output
+        //_printData();
+    }
+    else
+    {
+        cout << "Error: MPSREADER - File not found" << endl;
+    }
+
+    readFile.close();
+}
+
 void mpsReader::initializeData()
 {
     int qntRestrictions = n_rows_inq + n_rows_eq;
