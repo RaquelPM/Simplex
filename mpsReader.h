@@ -96,6 +96,7 @@ public:
     vector<string> col_labels;
     vector<string> row_list;
     vector<string> col_list;
+    vector<int> restricoes;
 
 private:
     long col_pos;
@@ -114,7 +115,7 @@ private:
     void _getbraw(std::ifstream &readFile, VectorXd &braw);
     void _splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd &A, VectorXd &b);
     void _getBnds(std::ifstream &readFile);
-    void initializeData();
 };
+
 
 #endif

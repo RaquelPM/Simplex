@@ -42,7 +42,7 @@ void Simplex::findInitialSolution()
     VectorXd x_B = gs.solveInit(data.b - effectXn);
 
     x << x_N, x_B;
-    cout << "x_inicial: " << x.transpose() << endl;
+    //cout << "x_inicial: " << x.transpose() << endl;
 }
 
 bool Simplex::computeInfeasibility()
@@ -153,14 +153,16 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
     VectorXd lb = phase ? lb_phase : data.l;
 
     VectorXd step(data.m);
+    
     for (size_t i = 0; i < data.B.size(); i++)
     {
         int xi = data.B[i];
         double absD = abs(d(i));
         // caso d(i) seja zero
-        if (absD < EPSILON_1)
+        if (absD <= EPSILON_1) {
             step(i) = pInf;
-        // caso d(i) e -t_sign tenham sinais iguais
+        }
+        // caso d(i) e -t_sign tenham mesmo sinal
         else if (d(i) * -t_sign > EPSILON_1)
             step(i) = (ub[xi] - x[xi]) / absD;
         // caso d(i) e -t_sign tenham sinais opostos
@@ -172,37 +174,18 @@ pair<int, double> Simplex::chooseLeavingVariable(pair<int, int> enteringVariable
 
     //cout << "vetor t: " << step.transpose() << endl;
 
-    // cout << endl;
-
-    // // verificando a variavel limitante
-
-    // for(size_t i =0; i < data.B.size(); i++){
-    //     cout << data.B[i] << " ";
-    // } cout << endl;
-
-    // for(size_t i =0; i < data.m; i++){
-    //     cout << step(i) << " ";
-    // } cout << endl;
-
-    // cout << endl;
-
+    // verificando a variavel limitante
     double min_step = pInf;
     for (size_t i = 0; i < data.B.size(); i++)
     {
         if (step(i) <= min_step)
         {           
             if(step(i) == min_step){
-                // cout << "IGUAL!" << endl;
-                // cout << step(i) << " " << min_step << endl;
-                // cout << data.B[i] << " " << variable.first << endl;
                 if(data.B[i] < variable.first){
                     variable.first = data.B[i];
                 }
-                //sleep(1);
             } else {
-                // cout << "DI" << endl;
                 variable.first = data.B[i]; 
-                //sleep(1);
             }
             min_step = step(i);
         }
@@ -260,7 +243,7 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
     }
 
     // refatorando
-    if(gs.getEkSize() >= 20) gs.refatorar(data.B);
+    if(gs.getEkSize() >= 13) gs.refatorar(data.B);
     //gs.refatorar(data.B);
 
     //cout << "soluçao: " << x.transpose() << endl;
