@@ -3,6 +3,7 @@
 
 #include "Data.h"
 #include "GS.h"
+
 class Simplex
 {
 private:

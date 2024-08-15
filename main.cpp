@@ -17,6 +17,7 @@
 #include "GS.h"
 #include "Data.h"
 #include "mpsReader.h"
+#include "Scaling.h"
 
 using namespace std;
 
@@ -28,7 +29,19 @@ int main(int argc, char **argv)
 {
   string filename = argv[1];
   string fo = argv[2];
-  // leitor de instâncias mps
+
+  Eigen::MatrixXd mat(3, 4); // Cria uma matriz de 3 linhas e 4 colunas
+
+    // Preenche a matriz com alguns valores
+  mat << 0, 0.000000001, -3, 4,
+           -5, 6, 0, -8,
+           9, -10, 11, 12;
+
+  Scaling sa;
+
+  sa.teste(mat);
+
+  exit(0);
 
   MatrixXd A_dense;
   VectorXd b;
@@ -38,6 +51,7 @@ int main(int argc, char **argv)
 
   int m, n;
 
+  // leitor de instâncias mps
   mpsReader mps;
 
   if(fo != "mps"){
