@@ -30,18 +30,14 @@ int main(int argc, char **argv)
   string filename = argv[1];
   string fo = argv[2];
 
-  Eigen::MatrixXd mat(3, 4); // Cria uma matriz de 3 linhas e 4 colunas
+  // Eigen::MatrixXd mat(3, 4); // Cria uma matriz de 3 linhas e 4 colunas
 
-    // Preenche a matriz com alguns valores
-  mat << 0, 0.000000001, -3, 4,
-           -5, 6, 0, -8,
-           9, -10, 11, 12;
+  //   // Preenche a matriz com alguns valores
+  // mat << 0, 0.000000001, -3, 4,
+  //          -5, 6, 0, -8,
+  //          9, -10, 11, 12;
 
   Scaling sa;
-
-  sa.teste(mat);
-
-  exit(0);
 
   MatrixXd A_dense;
   VectorXd b;
@@ -54,7 +50,8 @@ int main(int argc, char **argv)
   // leitor de instâncias mps
   mpsReader mps;
 
-  if(fo != "mps"){
+  if (fo != "mps")
+  {
     ifstream readFile(filename);
     readFile >> m >> n;
 
@@ -66,43 +63,56 @@ int main(int argc, char **argv)
 
     readFile.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    for(int i = 0; i < m; i++){
-      for(int j = 0; j < n; j++){
+    for (int i = 0; i < m; i++)
+    {
+      for (int j = 0; j < n; j++)
+      {
         readFile >> A_dense(i, j);
       }
       readFile.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
-    for(int i =0; i < n; i++){
+    for (int i = 0; i < n; i++)
+    {
       readFile >> c(i);
     }
     readFile.ignore(numeric_limits<streamsize>::max(), '\n');
 
     string str;
 
-    for(int i =0;i < n; i++){
+    for (int i = 0; i < n; i++)
+    {
       readFile >> str;
-      if(!str.compare("inf")) l(i) = pInf;
-      else if(!str.compare("-inf")) l(i) = nInf;
-      else l(i) = stof(str);
+      if (!str.compare("inf"))
+        l(i) = pInf;
+      else if (!str.compare("-inf"))
+        l(i) = nInf;
+      else
+        l(i) = stof(str);
     }
 
     readFile.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    for(int i =0;i < n; i++){
+    for (int i = 0; i < n; i++)
+    {
       readFile >> str;
-      if(!str.compare("inf")) u(i) = pInf;
-      else if(!str.compare("-inf")) u(i) = nInf;
-      else u(i) = stof(str);
+      if (!str.compare("inf"))
+        u(i) = pInf;
+      else if (!str.compare("-inf"))
+        u(i) = nInf;
+      else
+        u(i) = stof(str);
     }
 
     readFile.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    for(int i =0;i < m; i++){
+    for (int i = 0; i < m; i++)
+    {
       readFile >> b(i);
     }
   }
-  else {
+  else
+  {
     mps.read(filename);
 
     l = mps.lb;
@@ -113,13 +123,22 @@ int main(int argc, char **argv)
     m = mps.n_rows_eq + mps.n_rows_inq;
     n = mps.n_cols + mps.n_rows_inq + mps.n_rows_eq;
   }
-  //cout << "leitor" << endl;
+  // cout << "leitor" << endl;
+
+  cout << l.transpose() << endl;
+  cout << u.transpose() << endl;
+
+  sa.geometric_iterate(A_dense, b, c, l, u);
+
+  cout << l.transpose() << endl;
+  cout << u.transpose() << endl;
+  exit(0);
 
   // Matriz A esparsa
   Eigen::SparseMatrix<double> A = A_dense.sparseView();
 
   // classe data armazenar as informações da instância e as matrizes B e N
-  //Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
+  // Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
 
   // cout << "lb: " << d.l.transpose() << endl;
   // cout << "ub: " << d.u.transpose() << endl;
@@ -196,19 +215,19 @@ int main(int argc, char **argv)
   bool phase = s.computeInfeasibility();
 
   cout << "fase: " << phase << endl;
-
-
+  int count = 0;
   // Simplex loop
   while (true)
   {
+    count++;
     // escolhendo a variavel que vai entrar na base
     pair<int, int> variable = s.chooseEnteringVariable(phase);
-    //cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
-    
+    // cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
+
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
     if (variable.first == INT_MAX)
     {
-      cout << "Optimal: " << s.objectiveFunction() << endl;
+      cout << "Optimal: " << s.objectiveFunction() << "interações: " << count << endl;
       return 0;
     }
 
@@ -222,8 +241,8 @@ int main(int argc, char **argv)
       return 0;
     }
 
-    //cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
-    
+    // cout << "variavel de saida " << leavingVariable.first << " max_t: " << leavingVariable.second << endl;
+
     // atualizando a base
     s.updateBasis(variable, leavingVariable);
 
@@ -231,9 +250,9 @@ int main(int argc, char **argv)
     if (phase)
       phase = s.computeInfeasibility();
 
-    cout << "cost: " << s.objectiveFunction() << " fase: " << phase << endl; 
+    cout << "cost: " << s.objectiveFunction() << " fase: " << phase << endl;
 
-    //sleep(1);
+    // sleep(1);
   }
 
   return 0;

@@ -28,21 +28,26 @@ mpsReader::mpsReader(string fileName)
     {
         cout << "Error: MPSREADER - File not found" << endl;
     }
-    for(size_t i = 0; i < restricoes.size(); i++){
-        if(restricoes[i] == -1){
+    for (size_t i = 0; i < restricoes.size(); i++)
+    {
+        if (restricoes[i] == -1)
+        {
             b(i) = 0;
-        }else if(restricoes[i] == 1){
+        }
+        else if (restricoes[i] == 1)
+        {
             b(i) = 0;
         }
     }
     readFile.close();
 }
 
-mpsReader::mpsReader(){
-
+mpsReader::mpsReader()
+{
 }
 
-void mpsReader::read(string fileName){
+void mpsReader::read(string fileName)
+{
     ifstream readFile(fileName);
 
     if (readFile.is_open())
@@ -69,10 +74,14 @@ void mpsReader::read(string fileName){
     {
         cout << "Error: MPSREADER - File not found" << endl;
     }
-    for(size_t i = 0; i < restricoes.size(); i++){
-        if(restricoes[i] == -1){
+    for (size_t i = 0; i < restricoes.size(); i++)
+    {
+        if (restricoes[i] == -1)
+        {
             b(i) = 0;
-        }else if(restricoes[i] == 1){
+        }
+        else if (restricoes[i] == 1)
+        {
             b(i) = 0;
         }
     }
@@ -168,7 +177,7 @@ void mpsReader::_preprocScan(ifstream &readFile)
                         n_rows++;
                         n_rows_eq++;
                     }*/
-                     if (firstWord.compare("L") == 0 || firstWord.compare("G") == 0 || firstWord.compare("E") == 0)
+                    if (firstWord.compare("L") == 0 || firstWord.compare("G") == 0 || firstWord.compare("E") == 0)
                     {
                         n_rows++;
                         n_rows_inq++;
@@ -250,7 +259,7 @@ void mpsReader::_extractData(ifstream &readFile)
     // cout << "braw: " << braw << endl;
 
     // get bounds
-    
+
     lb = VectorXd::Zero(n_cols + n_rows_inq);
     ub = VectorXd::Zero(n_cols + n_rows_inq);
     ub.fill(numeric_limits<double>::infinity());
@@ -286,7 +295,7 @@ void mpsReader::_getAraw(ifstream &readFile, MatrixXd &Araw)
         getline(readFile, line);
         istringstream thisLine(line);
 
-        cout << thisLine.str() << endl;
+        // cout << thisLine.str() << endl;
 
         thisLine >> colName;
 
@@ -325,7 +334,7 @@ void mpsReader::_getbraw(std::ifstream &readFile, VectorXd &braw)
 
         thisLine >> colName;
 
-        cout << thisLine.str() << endl;
+        // cout << thisLine.str() << endl;
 
         if (_checkSectionName(colName) != -1)
             break;
@@ -359,7 +368,7 @@ void mpsReader::_getBnds(std::ifstream &readFile)
         istringstream iss(line);
         iss >> label >> rowName >> colName >> value;
         colIdx = _getIndex(col_list, colName);
-        //cout << "l: " << label << " " << colName << endl;
+        // cout << "l: " << label << " " << colName << endl;
         if (label == "LO")
             lb(colIdx) = value;
         else if (label == "UP")
@@ -368,14 +377,15 @@ void mpsReader::_getBnds(std::ifstream &readFile)
         {
             ub(colIdx) = numeric_limits<double>::infinity();
             lb(colIdx) = -numeric_limits<double>::infinity();
-        } 
-        else if(label == "FX")
+        }
+        else if (label == "FX")
         {
             ub(colIdx) = value;
             lb(colIdx) = value;
         }
         {
-            if (_checkSectionName(label) == 10){
+            if (_checkSectionName(label) == 10)
+            {
                 std::cout << /*"Error: MPSREADER only accept LO and UP for Bounds"*/ std::endl;
                 break;
             }
@@ -402,7 +412,7 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = -1;
                 lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
                 ub(n_cols + counter_inq) = braw(i);
-                //cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
+                // cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
                 counter_inq++;
             }
             else if (row_labels[i] == "G")
@@ -411,18 +421,18 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 A(counter, n_cols + counter_inq) = -1;
                 ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
                 lb(n_cols + counter_inq) = braw(i);
-                //cout << "braw(i): " << braw(i) << endl;
+                // cout << "braw(i): " << braw(i) << endl;
                 counter_inq++;
             }
-            else if(row_labels[i] == "E")
+            else if (row_labels[i] == "E")
             {
-                //restricoes.push_back(0);
-                //adicionado: 
+                // restricoes.push_back(0);
+                // adicionado:
                 restricoes.push_back(1);
                 A(counter, n_cols + counter_inq) = -1;
                 ub(n_cols + counter_inq) = braw(i);
                 lb(n_cols + counter_inq) = braw(i);
-                //cout << "braw(i): " << braw(i) << endl;
+                // cout << "braw(i): " << braw(i) << endl;
                 counter_inq++;
             }
             counter++;
@@ -453,7 +463,7 @@ int mpsReader::_checkSectionName(string checkWord) const
         return 9;
     else if (checkWord.compare("ENDATA") == 0)
         return 10;
-    else if(checkWord.compare("FR") == 0)
+    else if (checkWord.compare("FR") == 0)
         return 11;
     else
         return -1;
