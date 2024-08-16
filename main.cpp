@@ -29,6 +29,8 @@ int main(int argc, char **argv)
 {
   string filename = argv[1];
   string fo = argv[2];
+  int pp = atoi(argv[3]);
+  int refactor = atoi(argv[4]);
 
   // Eigen::MatrixXd mat(3, 4); // Cria uma matriz de 3 linhas e 4 colunas
 
@@ -113,7 +115,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    mps.read(filename);
+    mps.read(filename, pp);
 
     l = mps.lb;
     u = mps.ub;
@@ -128,11 +130,11 @@ int main(int argc, char **argv)
   // cout << l.transpose() << endl;
   // cout << u.transpose() << endl;
 
-  sa.geometric_iterate(A_dense, b, c, l, u);
+  //sa.geometric_iterate(A_dense, b, c, l, u);
 
   // cout << l.transpose() << endl;
   // cout << u.transpose() << endl;
-  exit(0);
+  //exit(0);
 
   // Matriz A esparsa
   Eigen::SparseMatrix<double> A = A_dense.sparseView();
@@ -209,7 +211,7 @@ int main(int argc, char **argv)
   GS g(B_sparse, A, d.m);
 
   // inicializando o simplex
-  Simplex s(d, g);
+  Simplex s(d, g, refactor);
   s.findInitialSolution();
   // verificando se solução inicial é infeasible
   bool phase = s.computeInfeasibility();

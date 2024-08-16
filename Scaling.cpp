@@ -12,44 +12,50 @@ Scaling::Scaling()
 
 void Scaling::teste(MatrixXd A)
 {
-    cout << "min matriz: " << compute_min_aij(A) << endl;
-    cout << "max matriz: " << A.maxCoeff() << endl;
+    A_abs = A.cwiseAbs();
+    cout << "min matriz: " << compute_min_aij() << endl;
+    cout << "max matriz: " << A_abs.maxCoeff() << endl;
 
     cout << "min max linhas: " << endl;
 
-    pair<long double, long double> teste;
-    for (long int i = 0; i < A.rows(); i++)
+    pair<double, double> teste;
+    for (long int i = 0; i < A_abs.rows(); i++)
     {
-        teste = compute_min_max_row_aij(A, i);
+        teste = compute_min_max_row_aij(i);
         cout << teste.first << " " << teste.second << endl;
+
+        if(teste.first == 1 and teste.second == 1){
+            cout << "i: " << i << endl;
+            cout << A_abs.row(i) << endl;
+            exit(0);
+        }
     }
 
     cout << "min max colunas: " << endl;
 
     for (long int i = 0; i < A.cols(); i++)
     {
-        teste = compute_min_max_col_aij(A, i);
+        teste = compute_min_max_col_aij(i);
         cout << teste.first << " " << teste.second << endl;
     }
 
-    cout << "min max ratio row: min " << compute_min_max_row_ratio(A).first << " max: " << compute_min_max_row_ratio(A).second << endl;
-    cout << "min max ratio col: min " << compute_min_max_col_ratio(A).first << " max: " << compute_min_max_col_ratio(A).second << endl;
+    cout << "min max ratio row: min " << compute_min_max_row_ratio().first << " max: " << compute_min_max_row_ratio().second << endl;
+    cout << "min max ratio col: min " << compute_min_max_col_ratio().first << " max: " << compute_min_max_col_ratio().second << endl;
 
     // geometric_scale(A, true);
 
     // geometric_iterate(A);
 
-    cout << A << endl;
+    //cout << A << endl;
 }
 
-long double Scaling::compute_min_aij(MatrixXd A)
+double Scaling::compute_min_aij()
 {
-    // MatrixXd A_abs = A.cwiseAbs();
-    long double min_temp, min = numeric_limits<long double>::max();
+    double min_temp, min = numeric_limits<double>::max();
 
     VectorXd row = A_abs.row(0);
 
-    for (long int i = 0; i < A.rows(); i++)
+    for (long int i = 0; i < A_abs.rows(); i++)
     {
         row = A_abs.row(i);
         min_temp = compute_min_vector(row);
@@ -60,25 +66,25 @@ long double Scaling::compute_min_aij(MatrixXd A)
     return min;
 }
 
-long double Scaling::compute_min_vector(VectorXd v)
+double Scaling::compute_min_vector(const VectorXd& v)
 {
-    long double min = numeric_limits<long double>::max();
+    double min = numeric_limits<double>::max();
 
     for (long int i = 0; i < v.size(); i++)
     {
-        if (v(i) >= EPSILON_1 && min > v(i))
+        if (v(i) > EPSILON_1 && min > v(i)){
             min = v(i);
+        }
     }
 
     return min;
 }
 
-pair<long double, long double> Scaling::compute_min_max_row_aij(MatrixXd A, int index)
+pair<double, double> Scaling::compute_min_max_row_aij(int index)
 {
-    // MatrixXd A_abs = A.cwiseAbs();
     VectorXd row = A_abs.row(index);
 
-    pair<long double, long double> min_max;
+    pair<double, double> min_max;
 
     min_max.first = compute_min_vector(row);
     min_max.second = row.maxCoeff();
@@ -86,16 +92,16 @@ pair<long double, long double> Scaling::compute_min_max_row_aij(MatrixXd A, int 
     return min_max;
 }
 
-pair<long double, long double> Scaling::compute_min_max_row_ratio(MatrixXd A)
+pair<double, double> Scaling::compute_min_max_row_ratio()
 {
-    pair<long double, long double> min_max_ratio;
+    pair<double, double> min_max_ratio;
     min_max_ratio.first = pInf;
     min_max_ratio.second = 0;
 
-    for (long int i = 0; i < A.rows(); i++)
+    for (long int i = 0; i < A_abs.rows(); i++)
     {
-        pair<long double, long double> min_max = compute_min_max_row_aij(A, i);
-        long double ratio = min_max.second / min_max.first;
+        pair<double, double> min_max = compute_min_max_row_aij(i);
+        double ratio = min_max.second / min_max.first;
         min_max_ratio.first = min(min_max_ratio.first, ratio);
         min_max_ratio.second = max(min_max_ratio.second, ratio);
     }
@@ -103,13 +109,11 @@ pair<long double, long double> Scaling::compute_min_max_row_ratio(MatrixXd A)
     return min_max_ratio;
 }
 
-pair<long double, long double> Scaling::compute_min_max_col_aij(MatrixXd A, int index)
+pair<double, double> Scaling::compute_min_max_col_aij(int index)
 {
-    // MatrixXd A_abs = A.cwiseAbs();
-
     VectorXd col = A_abs.col(index);
 
-    pair<long double, long double> min_max;
+    pair<double, double> min_max;
 
     min_max.first = compute_min_vector(col);
     min_max.second = col.maxCoeff();
@@ -117,16 +121,16 @@ pair<long double, long double> Scaling::compute_min_max_col_aij(MatrixXd A, int 
     return min_max;
 }
 
-pair<long double, long double> Scaling::compute_min_max_col_ratio(MatrixXd A)
+pair<double, double> Scaling::compute_min_max_col_ratio()
 {
-    pair<long double, long double> min_max_ratio;
+    pair<double, double> min_max_ratio;
     min_max_ratio.first = pInf;
     min_max_ratio.second = 0;
 
-    for (long int i = 0; i < A.cols(); i++)
+    for (long int i = 0; i < A_abs.cols(); i++)
     {
-        pair<long double, long double> min_max = compute_min_max_col_aij(A, i);
-        long double ratio = min_max.second / min_max.first;
+        pair<double, double> min_max = compute_min_max_col_aij(i);
+        double ratio = min_max.second / min_max.first;
         min_max_ratio.first = min(min_max_ratio.first, ratio);
         min_max_ratio.second = max(min_max_ratio.second, ratio);
     }
@@ -136,11 +140,11 @@ pair<long double, long double> Scaling::compute_min_max_col_ratio(MatrixXd A)
 
 void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l, VectorXd &u, int flag)
 {
-    int m = A.rows();
+    int m = A_abs.rows();
     int n = A.cols();
 
-    pair<long double, long double> min_max;
-    long double fac;
+    pair<double, double> min_max;
+    double fac;
 
     for (int i = 0; i < 2; i++)
     {
@@ -148,7 +152,8 @@ void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l
         {
             for (int j = 0; j < m; j++)
             {
-                min_max = compute_min_max_row_aij(A, j);
+                min_max = compute_min_max_row_aij(j);
+                if(min_max.second == 0) continue;
                 fac = 1 / sqrt(min_max.first * min_max.second);
                 A.row(j) = A.row(j) * fac;
                 b(j) = b(j) * fac;
@@ -158,7 +163,8 @@ void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l
         {
             for (int j = 0; j < n; j++)
             {
-                min_max = compute_min_max_col_aij(A, j);
+                min_max = compute_min_max_col_aij(j);
+                if(min_max.second == 0) continue;
                 double r = sqrt(min_max.first * min_max.second);
                 fac = 1 / r;
                 A.col(j) = A.col(j) * fac;
@@ -174,20 +180,20 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
 {
     A_abs = A.cwiseAbs();
 
-    long double min_A = compute_min_aij(A);
-    long double max_A = A_abs.maxCoeff();
+    double min_A = compute_min_aij();
+    double max_A = A_abs.maxCoeff();
 
-    long double old_ratio, ratio = max_A / min_A;
+    double old_ratio, ratio = max_A / min_A;
 
     cout << "ratio antes do pré-processamento: " << ratio << endl;
 
     ratio = 0;
 
-    pair<long double, long double> min_max_row_ratio = compute_min_max_row_ratio(A);
-    pair<long double, long double> min_max_col_ratio = compute_min_max_col_ratio(A);
+    pair<double, double> min_max_row_ratio = compute_min_max_row_ratio();
+    pair<double, double> min_max_col_ratio = compute_min_max_col_ratio();
 
     int flag = min_max_row_ratio.second > min_max_col_ratio.second;
-    // flag = 0;
+    //int flag = 0;
 
     cout << "flag: " << flag << endl;
 
@@ -200,7 +206,7 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
 
         A_abs = A.cwiseAbs();
 
-        min_A = compute_min_aij(A);
+        min_A = compute_min_aij();
         max_A = A_abs.maxCoeff();
 
         ratio = max_A / min_A;

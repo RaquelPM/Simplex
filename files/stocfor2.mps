@@ -7479,8 +7479,8 @@ COLUMNS
     BALAN73J  TFLOW23J           -1.   YIELD73J           -1.
     PNLTY73J  HARV          .0263248   TFLOW13J           -1.
 RHS
-    RHS       REGEN101          .241   REGEN201          .125
-    RHS       REGEN301         1.404   REGEN401         2.004
-    RHS       REGEN501         9.768   REGEN601        16.385
-    RHS       REGEN701         2.815   REGEN801        61.995
+    RHS1       REGEN101          .241   REGEN201          .125
+    RHS1       REGEN301         1.404   REGEN401         2.004
+    RHS1       REGEN501         9.768   REGEN601        16.385
+    RHS1       REGEN701         2.815   REGEN801        61.995
 ENDATA

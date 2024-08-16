@@ -35531,5 +35531,5 @@ COLUMNS
     C01       COST01             -1.   COST                1.
     B01       BENFIT01           -1.   BMIN01              1.
 RHS
-    RHS       TOTALL              1.   BMIN01             .85
+    RHS1       TOTALL              1.   BMIN01             .85
 ENDATA

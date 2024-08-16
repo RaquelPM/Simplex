@@ -20,8 +20,10 @@ private:
     VectorXd ub_phase;
     VectorXd lb_phase;
 
+    int refactor;
+
 public:
-    Simplex(Data &data, GS &gs) : data(data), gs(gs) {}
+    Simplex(Data &data, GS &gs, int refactor) : data(data), gs(gs), refactor(refactor) {}
     void findInitialSolution();
     bool computeInfeasibility();
     pair<int, int> chooseEnteringVariable(bool phase);

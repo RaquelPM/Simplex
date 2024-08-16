@@ -21588,21 +21588,21 @@ COLUMNS
     W0508216  COST05            4.01
     C05       COST05             -1.   CMAX05              1.
 RHS
-    RHS       TOTAL001            .1   TOTAL002           .05
-    RHS       TOTAL012           .05   TOTAL019           .05
-    RHS       TOTAL033           .02   TOTAL045           .02
-    RHS       TOTAL048           .01   TOTAL055           .15
-    RHS       TOTAL069           .01   TOTAL073           .05
-    RHS       TOTAL090           .02   TOTAL105           .02
-    RHS       TOTAL109           .15   TOTAL126           .02
-    RHS       TOTAL127           .09   TOTAL147           .01
-    RHS       TOTAL162           .03   TOTAL163            .1
-    RHS       TOTAL192           .01   TOTAL204           .01
-    RHS       TOTAL210           .03   DS0201             .22
-    RHS       US0201              .2   US0202              .4
-    RHS       DS0301             .33   US0301             .16
-    RHS       US0302             .32   DS0401             .44
-    RHS       US0401             .13   US0402             .26
-    RHS       DS0501             .55   US0501              .1
-    RHS       US0502              .2   CMAX05             .77
+    RHS1       TOTAL001            .1   TOTAL002           .05
+    RHS1       TOTAL012           .05   TOTAL019           .05
+    RHS1       TOTAL033           .02   TOTAL045           .02
+    RHS1       TOTAL048           .01   TOTAL055           .15
+    RHS1       TOTAL069           .01   TOTAL073           .05
+    RHS1       TOTAL090           .02   TOTAL105           .02
+    RHS1       TOTAL109           .15   TOTAL126           .02
+    RHS1       TOTAL127           .09   TOTAL147           .01
+    RHS1       TOTAL162           .03   TOTAL163            .1
+    RHS1       TOTAL192           .01   TOTAL204           .01
+    RHS1       TOTAL210           .03   DS0201             .22
+    RHS1       US0201              .2   US0202              .4
+    RHS1       DS0301             .33   US0301             .16
+    RHS1       US0302             .32   DS0401             .44
+    RHS1       US0401             .13   US0402             .26
+    RHS1       DS0501             .55   US0501              .1
+    RHS1       US0502              .2   CMAX05             .77
 ENDATA

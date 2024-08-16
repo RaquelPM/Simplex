@@ -2463,7 +2463,7 @@ COLUMNS
     PPG.P1BW  UFU...BW         -.002   UH2...BW       1.04473
     PPG.P1BW  UNF...BW         -.003   U9R...BW         -.073
     PPG.P1BW  CTF.P1BW           -1.   CBF.P1BW           -1.
-    PPG.P1BW  CTC.P1BW       -.00001   CTV.P1BW           -1.
+    PPG.P1BW  CTC.P1BW       -41   CTV.P1BW           -1.
     PPG.P1BW  BPG...BW           -1.   B1B...BW         .7563
     PPG.P1BW  BGS...BW        .05521   BLP...BW        .06964
     PPG.P1BW  BSI...BW        .03369   BSJ...BW        .04936

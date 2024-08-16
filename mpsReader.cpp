@@ -1,4 +1,5 @@
 #include "mpsReader.h"
+#include "Scaling.h"
 
 mpsReader::mpsReader(string fileName)
 {
@@ -28,17 +29,6 @@ mpsReader::mpsReader(string fileName)
     {
         cout << "Error: MPSREADER - File not found" << endl;
     }
-    for (size_t i = 0; i < restricoes.size(); i++)
-    {
-        if (restricoes[i] == -1)
-        {
-            b(i) = 0;
-        }
-        else if (restricoes[i] == 1)
-        {
-            b(i) = 0;
-        }
-    }
     readFile.close();
 }
 
@@ -46,9 +36,10 @@ mpsReader::mpsReader()
 {
 }
 
-void mpsReader::read(string fileName)
+void mpsReader::read(string fileName, int pre)
 {
     ifstream readFile(fileName);
+    preprocess = pre;
 
     if (readFile.is_open())
     {
@@ -73,17 +64,6 @@ void mpsReader::read(string fileName)
     else
     {
         cout << "Error: MPSREADER - File not found" << endl;
-    }
-    for (size_t i = 0; i < restricoes.size(); i++)
-    {
-        if (restricoes[i] == -1)
-        {
-            b(i) = 0;
-        }
-        else if (restricoes[i] == 1)
-        {
-            b(i) = 0;
-        }
     }
     readFile.close();
 }
@@ -256,6 +236,10 @@ void mpsReader::_extractData(ifstream &readFile)
     _getbraw(readFile, braw);
     // braw.print("braw: ");
 
+    // get c
+    c = VectorXd::Zero(n_cols + n_rows_inq);
+    _splitC(Araw, c);
+
     // cout << "braw: " << braw << endl;
 
     // get bounds
@@ -271,7 +255,8 @@ void mpsReader::_extractData(ifstream &readFile)
     // and splict braw to b and beq
     A = MatrixXd::Zero(n_rows_inq + n_rows_eq, n_cols + n_rows_inq);
     b = VectorXd::Zero(n_rows_inq + n_rows_eq);
-    c = VectorXd::Zero(n_cols + n_rows_inq);
+    Scaling sc;
+    if(preprocess) sc.geometric_iterate(Araw, braw, c, lb, ub);
     _splitRaw(Araw, braw, c, A, b);
 }
 
@@ -394,20 +379,29 @@ void mpsReader::_getBnds(std::ifstream &readFile)
     } while (true);
 }
 
+void mpsReader::_splitC(MatrixXd &Araw, VectorXd &c)
+{
+    for (int i = n_rows - 1; i >= 0; i--)
+    {
+        if (row_labels[i] == "N"){
+            c.head(n_cols) = Araw.row(i).transpose();
+            row_labels[i] = "X";
+            Araw.row(i).setZero();
+        }
+            
+    }
+}
+
 void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd &A, VectorXd &b)
 {
     int counter = 0, counter_inq = 0;
 
     for (int i = 0; i < n_rows; i++)
     {
-        if (row_labels[i] == "N")
-            c.head(n_cols) = Araw.row(i).transpose();
-        else
-        {
+        if (row_labels[i] != "X"){
             A.block(counter, 0, 1, n_cols) = Araw.row(i);
-            b.row(counter) = braw.row(i);
-            if (row_labels[i] == "L")
-            {
+            //b.row(counter) = braw.row(i);
+            if (row_labels[i] == "L"){
                 restricoes.push_back(-1);
                 A(counter, n_cols + counter_inq) = -1;
                 lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
@@ -415,8 +409,7 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 // cout << "braw(i): " << braw(i) << " " << n_cols + counter_inq << endl;
                 counter_inq++;
             }
-            else if (row_labels[i] == "G")
-            {
+            else if (row_labels[i] == "G"){
                 restricoes.push_back(1);
                 A(counter, n_cols + counter_inq) = -1;
                 ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
@@ -424,8 +417,7 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 // cout << "braw(i): " << braw(i) << endl;
                 counter_inq++;
             }
-            else if (row_labels[i] == "E")
-            {
+            else if (row_labels[i] == "E"){
                 // restricoes.push_back(0);
                 // adicionado:
                 restricoes.push_back(1);

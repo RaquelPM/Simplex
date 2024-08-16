@@ -78,7 +78,7 @@ class mpsReader
 public:
     mpsReader(string fileName);
     mpsReader();
-    void read(string fileName);
+    void read(string fileName, int pre);
 
     string Name;
     int n_rows;
@@ -98,6 +98,8 @@ public:
     vector<string> col_list;
     vector<int> restricoes;
 
+    int preprocess;
+
 private:
     long col_pos;
     long rhs_pos;
@@ -115,6 +117,7 @@ private:
     void _getbraw(std::ifstream &readFile, VectorXd &braw);
     void _splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd &A, VectorXd &b);
     void _getBnds(std::ifstream &readFile);
+    void _splitC(MatrixXd &Araw, VectorXd &c);
 };
 
 
