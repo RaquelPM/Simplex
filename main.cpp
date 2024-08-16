@@ -125,13 +125,13 @@ int main(int argc, char **argv)
   }
   // cout << "leitor" << endl;
 
-  cout << l.transpose() << endl;
-  cout << u.transpose() << endl;
+  // cout << l.transpose() << endl;
+  // cout << u.transpose() << endl;
 
   sa.geometric_iterate(A_dense, b, c, l, u);
 
-  cout << l.transpose() << endl;
-  cout << u.transpose() << endl;
+  // cout << l.transpose() << endl;
+  // cout << u.transpose() << endl;
   exit(0);
 
   // Matriz A esparsa
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
     if (variable.first == INT_MAX)
     {
-      cout << "Optimal: " << s.objectiveFunction() << "interações: " << count << endl;
+      cout << "Optimal: " << s.objectiveFunction() << " interações: " << count << endl;
       return 0;
     }
 

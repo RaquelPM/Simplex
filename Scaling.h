@@ -28,7 +28,7 @@ private:
     pair<long double, long double> compute_min_max_col_aij(MatrixXd A, int index);
     pair<long double, long double> compute_min_max_col_ratio(MatrixXd A);
     pair<long double, long double> compute_min_max_row_ratio(MatrixXd A);
-    void geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l, VectorXd &u, bool flag);
+    void geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l, VectorXd &u, int flag);
 
 public:
     Scaling();

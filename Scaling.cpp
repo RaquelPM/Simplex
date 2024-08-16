@@ -134,7 +134,7 @@ pair<long double, long double> Scaling::compute_min_max_col_ratio(MatrixXd A)
     return min_max_ratio;
 }
 
-void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l, VectorXd &u, bool flag)
+void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l, VectorXd &u, int flag)
 {
     int m = A.rows();
     int n = A.cols();
@@ -159,11 +159,12 @@ void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l
             for (int j = 0; j < n; j++)
             {
                 min_max = compute_min_max_col_aij(A, j);
-                fac = 1 / sqrt(min_max.first * min_max.second);
+                double r = sqrt(min_max.first * min_max.second);
+                fac = 1 / r;
                 A.col(j) = A.col(j) * fac;
                 c(j) = c(j) * fac;
-                l(j) = l(j) * fac;
-                u(j) = u(j) * fac;
+                l(j) = l(j) * r;
+                u(j) = u(j) * r;
             }
         }
     }
@@ -185,7 +186,8 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
     pair<long double, long double> min_max_row_ratio = compute_min_max_row_ratio(A);
     pair<long double, long double> min_max_col_ratio = compute_min_max_col_ratio(A);
 
-    bool flag = min_max_row_ratio.second > min_max_col_ratio.second;
+    int flag = min_max_row_ratio.second > min_max_col_ratio.second;
+    // flag = 0;
 
     cout << "flag: " << flag << endl;
 
