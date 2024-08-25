@@ -255,9 +255,6 @@ void Simplex::updateBasis(pair<int, int> enteringVariable, pair<int, double> lea
     // refatorando
     if (gs.getEkSize() >= refactor)
         gs.refatorar(data.B);
-    //gs.refatorar(data.B);
-
-    // cout << "soluçao: " << x.transpose() << endl;
 }
 
 double Simplex::objectiveFunction()

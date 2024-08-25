@@ -24,7 +24,8 @@ void Scaling::teste(MatrixXd A)
         teste = compute_min_max_row_aij(i);
         cout << teste.first << " " << teste.second << endl;
 
-        if(teste.first == 1 and teste.second == 1){
+        if (teste.first == 1 and teste.second == 1)
+        {
             cout << "i: " << i << endl;
             cout << A_abs.row(i) << endl;
             exit(0);
@@ -46,7 +47,7 @@ void Scaling::teste(MatrixXd A)
 
     // geometric_iterate(A);
 
-    //cout << A << endl;
+    // cout << A << endl;
 }
 
 double Scaling::compute_min_aij()
@@ -66,13 +67,14 @@ double Scaling::compute_min_aij()
     return min;
 }
 
-double Scaling::compute_min_vector(const VectorXd& v)
+double Scaling::compute_min_vector(const VectorXd &v)
 {
     double min = numeric_limits<double>::max();
 
     for (long int i = 0; i < v.size(); i++)
     {
-        if (v(i) > EPSILON_1 && min > v(i)){
+        if (v(i) > EPSILON_1 && min > v(i))
+        {
             min = v(i);
         }
     }
@@ -153,7 +155,8 @@ void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l
             for (int j = 0; j < m; j++)
             {
                 min_max = compute_min_max_row_aij(j);
-                if(min_max.second == 0) continue;
+                if (min_max.second == 0)
+                    continue;
                 fac = 1 / sqrt(min_max.first * min_max.second);
                 A.row(j) = A.row(j) * fac;
                 b(j) = b(j) * fac;
@@ -164,7 +167,8 @@ void Scaling::geometric_scale(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd &l
             for (int j = 0; j < n; j++)
             {
                 min_max = compute_min_max_col_aij(j);
-                if(min_max.second == 0) continue;
+                if (min_max.second == 0)
+                    continue;
                 double r = sqrt(min_max.first * min_max.second);
                 fac = 1 / r;
                 A.col(j) = A.col(j) * fac;
@@ -185,7 +189,7 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
 
     double old_ratio, ratio = max_A / min_A;
 
-    cout << "ratio antes do pré-processamento: " << ratio << endl;
+    // cout << "ratio antes do pré-processamento: " << ratio << endl;
 
     ratio = 0;
 
@@ -193,7 +197,7 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
     pair<double, double> min_max_col_ratio = compute_min_max_col_ratio();
 
     int flag = min_max_row_ratio.second > min_max_col_ratio.second;
-    //int flag = 0;
+    // int flag = 0;
 
     cout << "flag: " << flag << endl;
 
@@ -217,6 +221,6 @@ void Scaling::geometric_iterate(MatrixXd &A, VectorXd &b, VectorXd &c, VectorXd 
         }
     }
 
-    cout << "min max A: " << min_A << " " << max_A << endl;
-    cout << "ratio após o pré-processamento: " << ratio << endl;
+    // cout << "min max A: " << min_A << " " << max_A << endl;
+    // cout << "ratio após o pré-processamento: " << ratio << endl;
 }

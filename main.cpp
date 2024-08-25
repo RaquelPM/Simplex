@@ -32,15 +32,10 @@ int main(int argc, char **argv)
   int pp = atoi(argv[3]);
   int refactor = atoi(argv[4]);
 
-  // Eigen::MatrixXd mat(3, 4); // Cria uma matriz de 3 linhas e 4 colunas
-
-  //   // Preenche a matriz com alguns valores
-  // mat << 0, 0.000000001, -3, 4,
-  //          -5, 6, 0, -8,
-  //          9, -10, 11, 12;
-
+  // scaling para normalizar a matriz A
   Scaling sa;
 
+  // variaveis para armazenar as informações da instância
   MatrixXd A_dense;
   VectorXd b;
   VectorXd l;
@@ -125,76 +120,12 @@ int main(int argc, char **argv)
     m = mps.n_rows_eq + mps.n_rows_inq;
     n = mps.n_cols + mps.n_rows_inq + mps.n_rows_eq;
   }
-  // cout << "leitor" << endl;
-
-  // cout << l.transpose() << endl;
-  // cout << u.transpose() << endl;
-
-  //sa.geometric_iterate(A_dense, b, c, l, u);
-
-  // cout << l.transpose() << endl;
-  // cout << u.transpose() << endl;
-  //exit(0);
 
   // Matriz A esparsa
   Eigen::SparseMatrix<double> A = A_dense.sparseView();
 
   // classe data armazenar as informações da instância e as matrizes B e N
-  // Data d(A, mps.b, mps.c, mps.ub, mps.lb, mps.n_rows_eq + mps.n_rows_inq, mps.n_cols + mps.n_rows_inq + mps.n_rows_eq);
-
-  // cout << "lb: " << d.l.transpose() << endl;
-  // cout << "ub: " << d.u.transpose() << endl;
-  // cout << "c: " << d.c.transpose() << endl;
-  // cout << "A: " << endl;
-  // cout << d.A << endl;
-  // cout << "b: " << d.b.transpose() << endl;
-
   Data d(A, b, c, u, l, m, n);
-
-  cout << d.m << " " << d.n << endl;
-
-  // cout << d.u.size() << endl;
-  // cout << d.l.size() << endl;
-
-  // // cout << "A: " << endl;
-  // // cout << A.col(1) << endl;
-
-  // for(int i = 0; i < d.m; i++){
-  //   for(int j =0; j < d.n; j++){
-  //     cout << A.coeff(i, j) << " ";
-  //   } cout << endl;
-  // }
-
-  // for(int i = 0; i < d.m; i++){
-  //   cout << d.b(i) << " ";
-  // }
-
-  // cout << endl;
-
-  // for(int i = 0; i < d.n; i++){
-  //   cout << -d.c(i) << " ";
-  // }
-  // cout << endl;
-
-  // for(int i = 0; i < d.n; i++){
-  //   cout << d.l(i) << " ";
-  // }
-  // cout << endl;
-
-  // for(int i = 0; i < d.n; i++){
-  //   cout << d.u(i) << " ";
-  // }
-  // cout << endl;
-
-  // for(size_t i = 0; i < d.B.size(); i++){
-  //   cout << d.B[i] << " ";
-  // }
-  // cout << endl;
-
-  // for(size_t i = 0; i < d.N.size(); i++){
-  //   cout << d.N[i] << " ";
-  // }
-  // cout << endl;
 
   if (fo == "mps")
     d.c = -d.c;
@@ -213,6 +144,7 @@ int main(int argc, char **argv)
   // inicializando o simplex
   Simplex s(d, g, refactor);
   s.findInitialSolution();
+
   // verificando se solução inicial é infeasible
   bool phase = s.computeInfeasibility();
 
@@ -224,6 +156,7 @@ int main(int argc, char **argv)
     count++;
     // escolhendo a variavel que vai entrar na base
     pair<int, int> variable = s.chooseEnteringVariable(phase);
+
     // cout << "variavel de entrada " << variable.first << " t_sign: " << variable.second << endl;
 
     // caso nenhuma variável aumente o custo (problema de maximazação) a solução é otima
@@ -253,8 +186,6 @@ int main(int argc, char **argv)
       phase = s.computeInfeasibility();
 
     cout << "cost: " << s.objectiveFunction() << " fase: " << phase << endl;
-
-    // sleep(1);
   }
 
   return 0;
