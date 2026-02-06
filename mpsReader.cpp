@@ -402,7 +402,6 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
             A.block(counter, 0, 1, n_cols) = Araw.row(i);
             //b.row(counter) = braw.row(i);
             if (row_labels[i] == "L"){
-                restricoes.push_back(-1);
                 A(counter, n_cols + counter_inq) = -1;
                 lb(n_cols + counter_inq) = -numeric_limits<double>::infinity();
                 ub(n_cols + counter_inq) = braw(i);
@@ -410,7 +409,6 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 counter_inq++;
             }
             else if (row_labels[i] == "G"){
-                restricoes.push_back(1);
                 A(counter, n_cols + counter_inq) = -1;
                 ub(n_cols + counter_inq) = numeric_limits<double>::infinity();
                 lb(n_cols + counter_inq) = braw(i);
@@ -418,9 +416,6 @@ void mpsReader::_splitRaw(MatrixXd &Araw, VectorXd &braw, VectorXd &c, MatrixXd 
                 counter_inq++;
             }
             else if (row_labels[i] == "E"){
-                // restricoes.push_back(0);
-                // adicionado:
-                restricoes.push_back(1);
                 A(counter, n_cols + counter_inq) = -1;
                 ub(n_cols + counter_inq) = braw(i);
                 lb(n_cols + counter_inq) = braw(i);

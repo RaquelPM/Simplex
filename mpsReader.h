@@ -96,7 +96,6 @@ public:
     vector<string> col_labels;
     vector<string> row_list;
     vector<string> col_list;
-    vector<int> restricoes;
 
     int preprocess;
 

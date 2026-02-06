@@ -27,9 +27,13 @@ double EPSILON_1 = 1e-5;
 
 int main(int argc, char **argv)
 {
+  // caminho para o arquivo
   string filename = argv[1];
+  // formato do arquivo (mps/txt)
   string fo = argv[2];
+  // usar o pre-processamento ou nao (1/0)
   int pp = atoi(argv[3]);
+  // quantidade maxima de matrizes eta para a refatoracao
   int refactor = atoi(argv[4]);
 
   // scaling para normalizar a matriz A
@@ -47,6 +51,7 @@ int main(int argc, char **argv)
   // leitor de instâncias mps
   mpsReader mps;
 
+  // ler diretamente de um arquivo txt (usado apenas para debug)
   if (fo != "mps")
   {
     ifstream readFile(filename);
@@ -127,6 +132,7 @@ int main(int argc, char **argv)
   // classe data armazenar as informações da instância e as matrizes B e N
   Data d(A, b, c, u, l, m, n);
 
+  // padrao mps sao problemas de minimizacao
   if (fo == "mps")
     d.c = -d.c;
 
